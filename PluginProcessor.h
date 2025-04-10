@@ -8,7 +8,80 @@
 
 #pragma once
 
+
+/*
+DSP Roadmap
+1 find out how to split audio into 3 bands
+2 create parameters to control where splits happen in signal
+3 prove that splitting does not create artifacts
+4 create parameters for 3 compressor bands must live on each instance
+5 add 2 compressor bands
+6 add parameters for mute, solo, bypass for each band
+7 add input and output gain
+8 clean up
+*/
+
 #include <JuceHeader.h>
+
+
+namespace Parameters
+{
+    enum Names
+    {
+        Low_Mid_Crossover_Freq,
+        Mid_Hight_Crossover_Freq,
+
+        Threshold_Low_Band,
+        Threshold_Mid_Band,
+        Threshold_High_Band,
+
+        Attack_Low_Band,
+        Attack_Mid_Band,
+        Attack_High_Band,
+
+        Release_Low_Band,
+        Release_Mid_Band,
+        Release_High_Band,
+
+        Ratio_Low_Band,
+        Ratio_Mid_Band,
+        Ratio_High_Band,
+
+        Bypassed_Low_Band,
+        Bypassed_Mid_Band,
+        Bypassed_High_Band,
+    };
+
+    inline const std::map<Names, juce::String>& GetParams()
+    {
+        static std::map<Names, juce::String> paramsMap =
+        {
+            {Low_Mid_Crossover_Freq, "Low-Mid Crossover Frequency"},
+            {Mid_Hight_Crossover_Freq, "Mid-High Crossover Frequency"},
+
+            {Threshold_Low_Band, "Threshold Low Band"},
+            {Threshold_Mid_Band, "Threshold Mid Band"},
+            {Threshold_High_Band, "Threshold High Band"},
+
+            {Attack_Low_Band, "Attack Low Band"},
+            {Attack_Mid_Band, "Attack Mid Band"},
+            {Attack_High_Band, "Attack High Band"},
+
+            {Release_Low_Band, "Release Low Band"},
+            {Release_Mid_Band, "Release Mid Band"},
+            {Release_High_Band, "Release High Band"},
+
+            {Ratio_Low_Band, "Ratio Low Band"},
+            {Ratio_Mid_Band, "Ratio Mid Band"},
+            {Ratio_High_Band, "Ratio High Band"},
+
+            {Bypassed_Low_Band, "Bypassed Low Band"},
+            {Bypassed_Mid_Band, "Bypassed Mid Band"},
+            {Bypassed_High_Band, "Bypassed High Band"},
+        };
+        return paramsMap;
+    }
+}
 
 struct CompressorBand
 {
@@ -95,14 +168,6 @@ public:
 
 private:
     //==============================================================================
-
-  /*  juce::dsp::Compressor<float> compressor;
-
-    juce::AudioParameterFloat* attack{ nullptr };
-    juce::AudioParameterFloat* release{ nullptr };
-    juce::AudioParameterFloat* threshold{ nullptr };
-    juce::AudioParameterChoice* ratio{ nullptr };
-    juce::AudioParameterBool* bypassed{ nullptr };*/
 
     CompressorBand compressor;
 
