@@ -173,6 +173,9 @@ private:
 
     juce::dsp::LinkwitzRileyFilter<float> LPFilter, HPFilter;
 
+    juce::dsp::LinkwitzRileyFilter<float> APFilter;
+    juce::AudioBuffer<float> apBuffer;
+
     juce::AudioParameterFloat* lowCrossover{ nullptr };
 
     std::array<juce::AudioBuffer<float>, 2> filterBuffers;

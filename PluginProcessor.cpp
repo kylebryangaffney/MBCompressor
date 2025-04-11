@@ -53,6 +53,7 @@ MBCompAudioProcessor::MBCompAudioProcessor()
 
     LPFilter.setType(juce::dsp::LinkwitzRileyFilterType::lowpass);
     HPFilter.setType(juce::dsp::LinkwitzRileyFilterType::highpass);
+    APFilter.setType(juce::dsp::LinkwitzRileyFilterType::allpass);
 
 }
 
@@ -133,6 +134,8 @@ void MBCompAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 
     LPFilter.prepare(spec);
     HPFilter.prepare(spec);
+    APFilter.prepare(spec);
+    apBuffer.setSize(spec.numChannels, samplesPerBlock);
 
     for (auto& buffer : filterBuffers)
     {
@@ -188,6 +191,7 @@ void MBCompAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
     auto cutoff = lowCrossover->get();
     LPFilter.setCutoffFrequency(cutoff);
     HPFilter.setCutoffFrequency(cutoff);
+    APFilter.setCutoffFrequency(cutoff);
 
     auto fb0Block = juce::dsp::AudioBlock<float>(filterBuffers[0]);
     auto fb1Block = juce::dsp::AudioBlock<float>(filterBuffers[1]);
@@ -201,8 +205,18 @@ void MBCompAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
     int numSamples = buffer.getNumSamples();
     int numChannels = buffer.getNumChannels();
 
-    buffer.clear();
+    /*if (compressor.bypassed->get())
+    {
+        return;
+    }*/
+
+    apBuffer = buffer;
     
+    auto apBlock = juce::dsp::AudioBlock<float>(apBuffer);
+    auto apCtx = juce::dsp::ProcessContextReplacing<float>(apBlock);
+    APFilter.process(apCtx);
+
+    buffer.clear();
 
     auto addFilterBand = [nc = numChannels, ns = numSamples](auto& inputBuffer, const auto& source)
         {
@@ -212,8 +226,27 @@ void MBCompAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
             }
         };
 
+    //if (!compressor.bypassed->get())
+    //{
+    //    addFilterBand(buffer, filterBuffers[0]);
+    //    addFilterBand(buffer, filterBuffers[1]);
+    //}
+    //else
+    //{
+    //    addFilterBand(buffer, apBuffer);
+    //}
+
     addFilterBand(buffer, filterBuffers[0]);
     addFilterBand(buffer, filterBuffers[1]);
+
+    if (compressor.bypassed->get())
+    {
+        for (int ch = 0; ch < numChannels; ++ch)
+        {
+            juce::FloatVectorOperations::multiply(apBuffer.getWritePointer(ch), -1.f, numSamples);
+        }
+        addFilterBand(buffer, apBuffer);
+    }
 
 }
 
