@@ -169,20 +169,21 @@ public:
 private:
     //==============================================================================
 
-    CompressorBand compressor;
+    std::array<CompressorBand, 3> compressorArray;
+
+    CompressorBand& lowBandComp = compressorArray[0];
+    CompressorBand& midBandComp = compressorArray[1];
+    CompressorBand& highBandComp = compressorArray[2];
 
     juce::dsp::LinkwitzRileyFilter<float> 
         LPFilter1, APFilter2,
         HPFilter1, LPFilter2,
                    HPFilter2;
 
-    //juce::dsp::LinkwitzRileyFilter<float> invAP1, invAP2;
-    //juce::AudioBuffer<float> invAPBuffer;
-
     juce::AudioParameterFloat* lowMidCrossover{ nullptr };
     juce::AudioParameterFloat* midHighCrossover{ nullptr };
 
-    std::array<juce::AudioBuffer<float>, 3> filterBuffers;
+    std::array<juce::AudioBuffer<float>, 3> filterBufferArray;
 
     //================================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MBCompAudioProcessor)
