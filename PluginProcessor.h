@@ -176,8 +176,8 @@ private:
         HPFilter1, LPFilter2,
                    HPFilter2;
 
-    juce::dsp::LinkwitzRileyFilter<float> invAP1, invAP2;
-    juce::AudioBuffer<float> invAPBuffer;
+    //juce::dsp::LinkwitzRileyFilter<float> invAP1, invAP2;
+    //juce::AudioBuffer<float> invAPBuffer;
 
     juce::AudioParameterFloat* lowMidCrossover{ nullptr };
     juce::AudioParameterFloat* midHighCrossover{ nullptr };
