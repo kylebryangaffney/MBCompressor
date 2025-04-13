@@ -58,6 +58,9 @@ namespace Parameters
         Solo_Low_Band,
         Solo_Mid_Band,
         Solo_High_Band,
+
+        Input_Gain,
+        Output_Gain,
     };
 
     inline const std::map<Names, juce::String>& GetParams()
@@ -94,6 +97,9 @@ namespace Parameters
             {Solo_Low_Band, "Solo Low Band"},
             {Solo_Mid_Band, "Solo Mid Band"},
             {Solo_High_Band, "Solo High Band"},
+
+            {Input_Gain, "Input Gain"},
+            {Output_Gain, "Output Gain"},
         };
         return paramsMap;
     }
@@ -193,15 +199,30 @@ private:
     CompressorBand& midBandComp = compressorArray[1];
     CompressorBand& highBandComp = compressorArray[2];
 
-    juce::dsp::LinkwitzRileyFilter<float> 
+    juce::dsp::LinkwitzRileyFilter<float>
         LPFilter1, APFilter2,
         HPFilter1, LPFilter2,
-                   HPFilter2;
+        HPFilter2;
 
     juce::AudioParameterFloat* lowMidCrossover{ nullptr };
     juce::AudioParameterFloat* midHighCrossover{ nullptr };
 
     std::array<juce::AudioBuffer<float>, 3> filterBufferArray;
+
+    juce::dsp::Gain<float> inputGain, outputGain;
+    juce::AudioParameterFloat* inputGainParam{ nullptr };
+    juce::AudioParameterFloat* outputGainParam{ nullptr };
+
+    template<typename T, typename U>
+    void applyGain(T& buffer, U& gain)
+    {
+        auto block = juce::dsp::AudioBlock<float>(buffer);
+        auto ctx = juce::dsp::ProcessContextReplacing<float>(block);
+        gain.process(ctx);
+    }
+
+    void updateState();
+    void splitBands(const juce::AudioBuffer<float>& inputBuffer);
 
     //================================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MBCompAudioProcessor)
