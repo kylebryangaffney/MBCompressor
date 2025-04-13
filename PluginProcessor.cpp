@@ -52,7 +52,7 @@ MBCompAudioProcessor::MBCompAudioProcessor()
     floatHelper(midBandComp.threshold, Parameters::Names::Threshold_Mid_Band);
 
     floatHelper(highBandComp.attack, Parameters::Names::Attack_High_Band);
-    floatHelper(highBandComp.release, Parameters::Names::Release_Mid_Band);
+    floatHelper(highBandComp.release, Parameters::Names::Release_High_Band);
     floatHelper(highBandComp.threshold, Parameters::Names::Threshold_High_Band);
 
     floatHelper(lowMidCrossover, Parameters::Names::Low_Mid_Crossover_Freq);
@@ -60,12 +60,18 @@ MBCompAudioProcessor::MBCompAudioProcessor()
 
     choiceHelper(lowBandComp.ratio, Parameters::Names::Ratio_Low_Band);
     boolHelper(lowBandComp.bypassed, Parameters::Names::Bypassed_Low_Band);
+    boolHelper(lowBandComp.mute, Parameters::Names::Mute_Low_Band);
+    boolHelper(lowBandComp.solo, Parameters::Names::Solo_Low_Band);
 
     choiceHelper(midBandComp.ratio, Parameters::Names::Ratio_Mid_Band);
     boolHelper(midBandComp.bypassed, Parameters::Names::Bypassed_Mid_Band);
+    boolHelper(midBandComp.mute, Parameters::Names::Mute_Mid_Band);
+    boolHelper(midBandComp.solo, Parameters::Names::Solo_Mid_Band);
 
     choiceHelper(highBandComp.ratio, Parameters::Names::Ratio_High_Band);
     boolHelper(highBandComp.bypassed, Parameters::Names::Bypassed_High_Band);
+    boolHelper(highBandComp.mute, Parameters::Names::Mute_High_Band);
+    boolHelper(highBandComp.solo, Parameters::Names::Solo_High_Band);
 
     LPFilter1.setType(juce::dsp::LinkwitzRileyFilterType::lowpass);
     HPFilter1.setType(juce::dsp::LinkwitzRileyFilterType::highpass);
@@ -244,7 +250,6 @@ void MBCompAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
         compressorArray[i].process(filterBufferArray[i]);
     }
 
-
     int numSamples = buffer.getNumSamples();
     int numChannels = buffer.getNumChannels();
 
@@ -258,10 +263,19 @@ void MBCompAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
             }
         };
 
- 
-    addFilterBand(buffer, filterBufferArray[0]);
-    addFilterBand(buffer, filterBufferArray[1]);
-    addFilterBand(buffer, filterBufferArray[2]);
+    const bool bandIsSoloed = std::any_of(compressorArray.begin(), compressorArray.end(),
+        [](const auto& comp) { return comp.solo->get(); });
+
+    for (size_t i = 0; i < compressorArray.size(); ++i)
+    {
+        const auto& comp = compressorArray[i];
+
+        if ((bandIsSoloed && comp.solo->get()) ||
+            (!bandIsSoloed && !comp.mute->get()))
+        {
+            addFilterBand(buffer, filterBufferArray[i]);
+        }
+    }
 
 }
 
@@ -390,6 +404,30 @@ juce::AudioProcessorValueTreeState::ParameterLayout MBCompAudioProcessor::create
     layout.add(std::make_unique<juce::AudioParameterBool>(
         params.at(Parameters::Names::Bypassed_High_Band),
         params.at(Parameters::Names::Bypassed_High_Band), false));
+
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        params.at(Parameters::Names::Mute_Low_Band),
+        params.at(Parameters::Names::Mute_Low_Band), false));
+
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        params.at(Parameters::Names::Mute_Mid_Band),
+        params.at(Parameters::Names::Mute_Mid_Band), false));
+
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        params.at(Parameters::Names::Mute_High_Band),
+        params.at(Parameters::Names::Mute_High_Band), false));
+
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        params.at(Parameters::Names::Solo_Low_Band),
+        params.at(Parameters::Names::Solo_Low_Band), false));
+
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        params.at(Parameters::Names::Solo_Mid_Band),
+        params.at(Parameters::Names::Solo_Mid_Band), false));
+
+    layout.add(std::make_unique<juce::AudioParameterBool>(
+        params.at(Parameters::Names::Solo_High_Band),
+        params.at(Parameters::Names::Solo_High_Band), false));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         params.at(Parameters::Names::Low_Mid_Crossover_Freq),
