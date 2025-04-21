@@ -9,13 +9,22 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-//==============================================================================
-MBCompAudioProcessorEditor::MBCompAudioProcessorEditor (MBCompAudioProcessor& p)
-    : AudioProcessorEditor (&p), audioProcessor (p)
+
+Placeholder::Placeholder()
 {
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
-    setSize (400, 300);
+    juce::Random r;
+    customColor = juce::Colour(r.nextInt(255), r.nextInt(255), r.nextInt(255));
+}
+//==============================================================================
+MBCompAudioProcessorEditor::MBCompAudioProcessorEditor(MBCompAudioProcessor& p)
+    : AudioProcessorEditor(&p), audioProcessor(p)
+{
+    addAndMakeVisible(controlBar);
+    addAndMakeVisible(analyzer);
+    addAndMakeVisible(globalControls);
+    addAndMakeVisible(bandControls);
+
+    setSize(600, 500);
 }
 
 MBCompAudioProcessorEditor::~MBCompAudioProcessorEditor()
@@ -23,18 +32,23 @@ MBCompAudioProcessorEditor::~MBCompAudioProcessorEditor()
 }
 
 //==============================================================================
-void MBCompAudioProcessorEditor::paint (juce::Graphics& g)
+void MBCompAudioProcessorEditor::paint(juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 
-    g.setColour (juce::Colours::white);
-    g.setFont (juce::FontOptions (15.0f));
-    g.drawFittedText ("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
+    g.setColour(juce::Colours::white);
+    g.setFont(juce::FontOptions(15.0f));
+    g.drawFittedText("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
 }
 
 void MBCompAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
+    auto bounds = getLocalBounds();
+
+    controlBar.setBounds(bounds.removeFromTop(32));
+    analyzer.setBounds(bounds.removeFromTop(225));
+    bandControls.setBounds(bounds.removeFromBottom(135));
+    globalControls.setBounds(bounds);
+
 }

@@ -1,10 +1,3 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
 
 #pragma once
 
@@ -12,16 +5,28 @@
 #include "PluginProcessor.h"
 
 //==============================================================================
+
+struct Placeholder : juce::Component
+{
+
+    Placeholder();
+    void paint(juce::Graphics& g) override
+    {
+        g.fillAll(customColor);
+    }
+
+    juce::Colour customColor;
+};
 /**
 */
-class MBCompAudioProcessorEditor  : public juce::AudioProcessorEditor
+class MBCompAudioProcessorEditor : public juce::AudioProcessorEditor
 {
 public:
-    MBCompAudioProcessorEditor (MBCompAudioProcessor&);
+    MBCompAudioProcessorEditor(MBCompAudioProcessor&);
     ~MBCompAudioProcessorEditor() override;
 
     //==============================================================================
-    void paint (juce::Graphics&) override;
+    void paint(juce::Graphics&) override;
     void resized() override;
 
 private:
@@ -29,5 +34,7 @@ private:
     // access the processor object that created it.
     MBCompAudioProcessor& audioProcessor;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MBCompAudioProcessorEditor)
+    Placeholder controlBar, analyzer, globalControls, bandControls;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MBCompAudioProcessorEditor)
 };
