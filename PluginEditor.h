@@ -96,9 +96,33 @@ struct Placeholder : juce::Component
     juce::Colour customColor;
 };
 
+struct RotarySlider : juce::Slider
+{
+    RotarySlider() :
+    juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 
+                 juce::Slider::TextEntryBoxPosition::NoTextBox)
+    { }
+};
+
+inline void makeAttachment(std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>&
+    attachment, juce::AudioProcessorValueTreeState& apvts, const std::map<Parameters::Names, juce::String>& paramsMap, const Parameters::Names paramID, juce::Slider& slider)
+{
+    attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, paramsMap.at(paramID), slider);
+}
+
 struct GlobalControls : juce::Component
 {
+    GlobalControls(juce::AudioProcessorValueTreeState& apvts);
+
     void paint(juce::Graphics& g) override;
+
+    void resized() override;
+
+private:
+    RotarySlider inputGainSlider, lowMidCrossoverSlider, midHighCrossoverSlider, outputGainSlider;
+
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> 
+        inputGainSliderAttachment, lowMidCrossoverSliderAttachment, midHighCrossoverSliderAttachment, outputGainSliderAttachment;
 };
 /**
 */
@@ -118,7 +142,7 @@ private:
     MBCompAudioProcessor& audioProcessor;
 
     Placeholder controlBar, analyzer, bandControls;
-    GlobalControls globalControls;
+    GlobalControls globalControls{ audioProcessor.apvts };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MBCompAudioProcessorEditor)
 };

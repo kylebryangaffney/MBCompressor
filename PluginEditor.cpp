@@ -234,6 +234,44 @@ Placeholder::Placeholder()
     customColor = juce::Colour(r.nextInt(255), r.nextInt(255), r.nextInt(255));
 }
 
+GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState& apvts)
+{
+    const auto& paramsMap = Parameters::GetParams();
+
+    makeAttachment(
+        inputGainSliderAttachment,
+        apvts,
+        paramsMap,
+        Parameters::Input_Gain,
+        inputGainSlider);
+
+    makeAttachment(
+        lowMidCrossoverSliderAttachment,
+        apvts,
+        paramsMap,
+        Parameters::Low_Mid_Crossover_Freq,
+        lowMidCrossoverSlider);
+
+    makeAttachment(
+        midHighCrossoverSliderAttachment,
+        apvts,
+        paramsMap,
+        Parameters::Mid_High_Crossover_Freq,
+        midHighCrossoverSlider);
+
+    makeAttachment(
+        outputGainSliderAttachment,
+        apvts,
+        paramsMap,
+        Parameters::Output_Gain,
+        outputGainSlider);
+
+    addAndMakeVisible(inputGainSlider);
+    addAndMakeVisible(lowMidCrossoverSlider);
+    addAndMakeVisible(midHighCrossoverSlider);
+    addAndMakeVisible(outputGainSlider);
+}
+
 void GlobalControls::paint(juce::Graphics& g)
 {
     auto bounds = getLocalBounds();
@@ -248,6 +286,22 @@ void GlobalControls::paint(juce::Graphics& g)
 
     g.drawRect(localBounds);
 
+}
+
+void GlobalControls::resized()
+{
+    auto bounds = getLocalBounds();
+
+    juce::FlexBox flexBox;
+    flexBox.flexDirection = juce::FlexBox::Direction::row;
+    flexBox.flexWrap = juce::FlexBox::Wrap::noWrap;
+
+    flexBox.items.add(juce::FlexItem(inputGainSlider).withFlex(1.0f));
+    flexBox.items.add(juce::FlexItem(lowMidCrossoverSlider).withFlex(1.0f));
+    flexBox.items.add(juce::FlexItem(midHighCrossoverSlider).withFlex(1.0f));
+    flexBox.items.add(juce::FlexItem(outputGainSlider).withFlex(1.0f));
+
+    flexBox.performLayout(bounds);
 }
 //==============================================================================
 MBCompAudioProcessorEditor::MBCompAudioProcessorEditor(MBCompAudioProcessor& p)
@@ -269,11 +323,7 @@ MBCompAudioProcessorEditor::~MBCompAudioProcessorEditor()
 void MBCompAudioProcessorEditor::paint(juce::Graphics& g)
 {
     //// (Our component is opaque, so we must completely fill the background with a solid colour)
-    //g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-
-    //g.setColour(juce::Colours::white);
-    //g.setFont(juce::FontOptions(15.0f));
-    //g.drawFittedText("Hello World!", getLocalBounds(), juce::Justification::centred, 1);
+  
 }
 
 void MBCompAudioProcessorEditor::resized()
