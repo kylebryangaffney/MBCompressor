@@ -238,38 +238,48 @@ GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState& apvts)
 {
     const auto& paramsMap = Parameters::GetParams();
 
+    auto& inGainParam = getRangedParam(apvts, paramsMap, Parameters::Input_Gain);
+    auto& lowMidParam = getRangedParam(apvts, paramsMap, Parameters::Low_Mid_Crossover_Freq);
+    auto& midHighParam = getRangedParam(apvts, paramsMap, Parameters::Mid_High_Crossover_Freq);
+    auto& outGainParam = getRangedParam(apvts, paramsMap, Parameters::Output_Gain);
+
+    inputGainSlider = std::make_unique<RotarySliderWithLabels>(inGainParam, " dB");
+    lowMidCrossoverSlider = std::make_unique<RotarySliderWithLabels>(lowMidParam, " Hz");
+    midHighCrossoverSlider = std::make_unique<RotarySliderWithLabels>(midHighParam, " Hz");
+    outputGainSlider = std::make_unique<RotarySliderWithLabels>(outGainParam, " dB");
+
     makeAttachment(
         inputGainSliderAttachment,
         apvts,
         paramsMap,
         Parameters::Input_Gain,
-        inputGainSlider);
+        *inputGainSlider);
 
     makeAttachment(
         lowMidCrossoverSliderAttachment,
         apvts,
         paramsMap,
         Parameters::Low_Mid_Crossover_Freq,
-        lowMidCrossoverSlider);
+        *lowMidCrossoverSlider);
 
     makeAttachment(
         midHighCrossoverSliderAttachment,
         apvts,
         paramsMap,
         Parameters::Mid_High_Crossover_Freq,
-        midHighCrossoverSlider);
+        *midHighCrossoverSlider);
 
     makeAttachment(
         outputGainSliderAttachment,
         apvts,
         paramsMap,
         Parameters::Output_Gain,
-        outputGainSlider);
+        *outputGainSlider);
 
-    addAndMakeVisible(inputGainSlider);
-    addAndMakeVisible(lowMidCrossoverSlider);
-    addAndMakeVisible(midHighCrossoverSlider);
-    addAndMakeVisible(outputGainSlider);
+    addAndMakeVisible(*inputGainSlider);
+    addAndMakeVisible(*lowMidCrossoverSlider);
+    addAndMakeVisible(*midHighCrossoverSlider);
+    addAndMakeVisible(*outputGainSlider);
 }
 
 void GlobalControls::paint(juce::Graphics& g)
@@ -296,10 +306,10 @@ void GlobalControls::resized()
     flexBox.flexDirection = juce::FlexBox::Direction::row;
     flexBox.flexWrap = juce::FlexBox::Wrap::noWrap;
 
-    flexBox.items.add(juce::FlexItem(inputGainSlider).withFlex(1.0f));
-    flexBox.items.add(juce::FlexItem(lowMidCrossoverSlider).withFlex(1.0f));
-    flexBox.items.add(juce::FlexItem(midHighCrossoverSlider).withFlex(1.0f));
-    flexBox.items.add(juce::FlexItem(outputGainSlider).withFlex(1.0f));
+    flexBox.items.add(juce::FlexItem(*inputGainSlider).withFlex(1.0f));
+    flexBox.items.add(juce::FlexItem(*lowMidCrossoverSlider).withFlex(1.0f));
+    flexBox.items.add(juce::FlexItem(*midHighCrossoverSlider).withFlex(1.0f));
+    flexBox.items.add(juce::FlexItem(*outputGainSlider).withFlex(1.0f));
 
     flexBox.performLayout(bounds);
 }

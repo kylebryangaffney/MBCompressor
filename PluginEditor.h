@@ -110,6 +110,15 @@ inline void makeAttachment(std::unique_ptr<juce::AudioProcessorValueTreeState::S
     attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, paramsMap.at(paramID), slider);
 }
 
+static juce::RangedAudioParameter& getRangedParam(juce::AudioProcessorValueTreeState& apvts, const std::map<Parameters::Names, juce::String>& paramsMap, Parameters::Names paramID)
+{
+    auto* param = dynamic_cast<juce::RangedAudioParameter*>(apvts.getParameter(paramsMap.at(paramID)));
+    jassert(param != nullptr);
+
+    return *param;
+
+}
+
 struct GlobalControls : juce::Component
 {
     GlobalControls(juce::AudioProcessorValueTreeState& apvts);
@@ -119,7 +128,7 @@ struct GlobalControls : juce::Component
     void resized() override;
 
 private:
-    RotarySlider inputGainSlider, lowMidCrossoverSlider, midHighCrossoverSlider, outputGainSlider;
+    std::unique_ptr<RotarySliderWithLabels> inputGainSlider, lowMidCrossoverSlider, midHighCrossoverSlider, outputGainSlider;
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> 
         inputGainSliderAttachment, lowMidCrossoverSliderAttachment, midHighCrossoverSliderAttachment, outputGainSliderAttachment;
