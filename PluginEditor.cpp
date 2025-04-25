@@ -1,13 +1,48 @@
-/*
-  ==============================================================================
 
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+
+bool truncateKiloValue(float& value)
+{
+    if (value > 999.0f)
+    {
+        value /= 1000.0f;
+        return true;
+    }
+
+    return false;
+}
+
+juce::String getValString(const juce::RangedAudioParameter& param,
+                          bool getLow, const juce::String& suffix)
+{
+    // pick the range endpoint
+    float v = getLow
+        ? param.getNormalisableRange().start
+        : param.getNormalisableRange().end;
+
+    // truncate to “k” if needed
+    const bool useK = truncateKiloValue(v);
+
+    // build string: number, optional “k”, then suffix
+    juce::String s;
+    s << v;
+    if (useK)
+        s << "k";
+    if (suffix.isNotEmpty())
+        s << " " << suffix;
+    return s;
+}
+
+void addLabelPairs(juce::Array<RotarySliderWithLabels::LabelPos>& labels,
+    const juce::RangedAudioParameter& param,
+    const juce::String& suffix)
+{
+    labels.clear();
+    labels.add({ 0.0f, getValString(param, true,  suffix) });
+    labels.add({ 1.0f, getValString(param, false, suffix) });
+}
 
 void LookAndFeel::drawRotarySlider(juce::Graphics& g,
     int x,
@@ -131,10 +166,6 @@ void RotarySliderWithLabels::paint(juce::Graphics& g)
 
     auto sliderBounds = getSliderBounds();
 
-    //    g.setColour(Colours::red);
-    //    g.drawRect(getLocalBounds());
-    //    g.setColour(Colours::yellow);
-    //    g.drawRect(sliderBounds);
 
     getLookAndFeel().drawRotarySlider(g,
         sliderBounds.getX(),
@@ -212,7 +243,7 @@ juce::String RotarySliderWithLabels::getDisplayString() const
     }
     else
     {
-        jassertfalse; //this shouldn't happen!
+        jassertfalse;
     }
 
     if (suffix.isNotEmpty())
@@ -276,6 +307,13 @@ GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState& apvts)
         Parameters::Output_Gain,
         *outputGainSlider);
 
+    //addLabelPairs(mySlider.labels, getRangedParam(apvts, paramsMap, Parameters::Low_Mid_Crossover_Freq), "Hz");
+
+    addLabelPairs(inputGainSlider->labels, getRangedParam(apvts, paramsMap, Parameters::Input_Gain), "dB");
+    addLabelPairs(lowMidCrossoverSlider->labels, getRangedParam(apvts, paramsMap, Parameters::Low_Mid_Crossover_Freq), "Hz");
+    addLabelPairs(midHighCrossoverSlider->labels, getRangedParam(apvts, paramsMap, Parameters::Mid_High_Crossover_Freq), "Hz");
+    addLabelPairs(outputGainSlider->labels, getRangedParam(apvts, paramsMap, Parameters::Output_Gain), "dB");
+
     addAndMakeVisible(*inputGainSlider);
     addAndMakeVisible(*lowMidCrossoverSlider);
     addAndMakeVisible(*midHighCrossoverSlider);
@@ -300,16 +338,24 @@ void GlobalControls::paint(juce::Graphics& g)
 
 void GlobalControls::resized()
 {
-    auto bounds = getLocalBounds();
+    auto bounds = getLocalBounds().reduced(5);
 
     juce::FlexBox flexBox;
     flexBox.flexDirection = juce::FlexBox::Direction::row;
     flexBox.flexWrap = juce::FlexBox::Wrap::noWrap;
 
+    auto spacer = juce::FlexItem().withWidth(3);
+    auto endCap = juce::FlexItem().withWidth(5);
+
+    flexBox.items.add(endCap);
     flexBox.items.add(juce::FlexItem(*inputGainSlider).withFlex(1.0f));
+    flexBox.items.add(spacer);
     flexBox.items.add(juce::FlexItem(*lowMidCrossoverSlider).withFlex(1.0f));
+    flexBox.items.add(spacer);
     flexBox.items.add(juce::FlexItem(*midHighCrossoverSlider).withFlex(1.0f));
+    flexBox.items.add(spacer);
     flexBox.items.add(juce::FlexItem(*outputGainSlider).withFlex(1.0f));
+    flexBox.items.add(endCap);
 
     flexBox.performLayout(bounds);
 }
@@ -332,8 +378,7 @@ MBCompAudioProcessorEditor::~MBCompAudioProcessorEditor()
 //==============================================================================
 void MBCompAudioProcessorEditor::paint(juce::Graphics& g)
 {
-    //// (Our component is opaque, so we must completely fill the background with a solid colour)
-  
+
 }
 
 void MBCompAudioProcessorEditor::resized()

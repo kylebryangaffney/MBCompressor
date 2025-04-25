@@ -99,9 +99,10 @@ struct Placeholder : juce::Component
 struct RotarySlider : juce::Slider
 {
     RotarySlider() :
-    juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag, 
-                 juce::Slider::TextEntryBoxPosition::NoTextBox)
-    { }
+        juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,
+            juce::Slider::TextEntryBoxPosition::NoTextBox)
+    {
+    }
 };
 
 inline void makeAttachment(std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>&
@@ -119,6 +120,16 @@ static juce::RangedAudioParameter& getRangedParam(juce::AudioProcessorValueTreeS
 
 }
 
+juce::String getValString(const juce::RangedAudioParameter& param,
+                          bool getLow, const juce::String& suffix);
+
+bool truncateKiloValue(float& value);
+
+void addLabelPairs(juce::Array<RotarySliderWithLabels::LabelPos>& labels,
+    const juce::RangedAudioParameter& param,
+    const juce::String& suffix);
+
+
 struct GlobalControls : juce::Component
 {
     GlobalControls(juce::AudioProcessorValueTreeState& apvts);
@@ -130,7 +141,7 @@ struct GlobalControls : juce::Component
 private:
     std::unique_ptr<RotarySliderWithLabels> inputGainSlider, lowMidCrossoverSlider, midHighCrossoverSlider, outputGainSlider;
 
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> 
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
         inputGainSliderAttachment, lowMidCrossoverSliderAttachment, midHighCrossoverSliderAttachment, outputGainSliderAttachment;
 };
 /**
@@ -146,8 +157,7 @@ public:
     void resized() override;
 
 private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
+
     MBCompAudioProcessor& audioProcessor;
 
     Placeholder controlBar, analyzer, bandControls;
