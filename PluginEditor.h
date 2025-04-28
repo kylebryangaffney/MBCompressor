@@ -130,13 +130,25 @@ void addLabelPairs(juce::Array<RotarySliderWithLabels::LabelPos>& labels,
     const juce::RangedAudioParameter& param,
     const juce::String& suffix);
 
+struct CompressorBandControls : juce::Component
+{
+    CompressorBandControls(juce::AudioProcessorValueTreeState& apvts);
+    void resized() override;
+    void paint(juce::Graphics& g) override;
+
+private:
+    RotarySlider attackSlider, releaseSlider, thresholdSlider, ratioSlider;
+
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
+        attackSliderAttachment, releaseSliderAttachment, thresholdSliderAttachment, ratioSliderAttachment;
+
+};
 
 struct GlobalControls : juce::Component
 {
     GlobalControls(juce::AudioProcessorValueTreeState& apvts);
 
     void paint(juce::Graphics& g) override;
-
     void resized() override;
 
 private:
@@ -161,8 +173,9 @@ private:
 
     MBCompAudioProcessor& audioProcessor;
 
-    Placeholder controlBar, analyzer, bandControls;
+    Placeholder controlBar, analyzer;
     GlobalControls globalControls{ audioProcessor.apvts };
+    CompressorBandControls bandControls{ audioProcessor.apvts };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MBCompAudioProcessorEditor)
 };
