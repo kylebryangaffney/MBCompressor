@@ -265,6 +265,11 @@ juce::String RotarySliderWithLabels::getDisplayString() const
     return str;
 }
 
+void RotarySliderWithLabels::changeParam(juce::RangedAudioParameter* p)
+{
+    param = p;
+    repaint();
+}
 
 Placeholder::Placeholder()
 {
@@ -272,7 +277,12 @@ Placeholder::Placeholder()
     customColor = juce::Colour(r.nextInt(255), r.nextInt(255), r.nextInt(255));
 }
 
-CompressorBandControls::CompressorBandControls(juce::AudioProcessorValueTreeState& apvts)
+CompressorBandControls::CompressorBandControls(juce::AudioProcessorValueTreeState& tree) :
+    apvts(tree),
+    attackSlider(nullptr, "ms", "Attack"),
+    releaseSlider(nullptr, "ms", "Release"),
+    thresholdSlider(nullptr, "dB", "Threshold"),
+    ratioSlider(nullptr, "", "Ratio")
 {
     const auto& paramsMap = Parameters::GetParams();
 
@@ -280,6 +290,11 @@ CompressorBandControls::CompressorBandControls(juce::AudioProcessorValueTreeStat
     auto& midReleaseParam = getRangedParam(apvts, paramsMap, Parameters::Release_Mid_Band);
     auto& midRatioParam = getRangedParam(apvts, paramsMap, Parameters::Ratio_Mid_Band);
     auto& midThresholdParam = getRangedParam(apvts, paramsMap, Parameters::Threshold_Mid_Band);
+
+    attackSlider.changeParam(&midAttackParam);
+    releaseSlider.changeParam(&midReleaseParam);
+    ratioSlider.changeParam(&midRatioParam);
+    thresholdSlider.changeParam(&midThresholdParam);
 
     makeAttachment(
         attackSliderAttachment,
@@ -309,12 +324,28 @@ CompressorBandControls::CompressorBandControls(juce::AudioProcessorValueTreeStat
         Parameters::Threshold_Mid_Band,
         thresholdSlider);
 
+    ratioSlider.labels.add({ 0.f, "1:1" });
+    auto ratioParam = dynamic_cast<juce::AudioParameterChoice*>(&getRangedParam(apvts, paramsMap, Parameters::Ratio_Mid_Band));
+    ratioSlider.labels.add({ 1.f, 
+        juce::String(ratioParam->choices.getReference(ratioParam->choices.size() - 1).getIntValue()) + ":1"});
+
+    addLabelPairs(attackSlider.labels,
+                  getRangedParam(apvts, paramsMap, Parameters::Attack_Mid_Band),
+                  "ms");
+    addLabelPairs(releaseSlider.labels,
+                  getRangedParam(apvts, paramsMap, Parameters::Release_Mid_Band),
+                  "ms");
+    addLabelPairs(thresholdSlider.labels,
+                  getRangedParam(apvts, paramsMap, Parameters::Threshold_Mid_Band),
+                  "dB");
+
     addAndMakeVisible(attackSlider);
     addAndMakeVisible(releaseSlider);
     addAndMakeVisible(ratioSlider);
     addAndMakeVisible(thresholdSlider);
 
 }
+
 
 void CompressorBandControls::resized()
 {
@@ -371,10 +402,10 @@ GlobalControls::GlobalControls(juce::AudioProcessorValueTreeState& apvts)
     auto& midHighParam = getRangedParam(apvts, paramsMap, Parameters::Mid_High_Crossover_Freq);
     auto& outGainParam = getRangedParam(apvts, paramsMap, Parameters::Output_Gain);
 
-    inputGainSlider = std::make_unique<RotarySliderWithLabels>(inGainParam, " dB", "Input Gain");
-    lowMidCrossoverSlider = std::make_unique<RotarySliderWithLabels>(lowMidParam, " Hz", "Low Mid Crossover");
-    midHighCrossoverSlider = std::make_unique<RotarySliderWithLabels>(midHighParam, " Hz", "Mid High Crossover");
-    outputGainSlider = std::make_unique<RotarySliderWithLabels>(outGainParam, " dB", "Output Gain");
+    inputGainSlider = std::make_unique<RotarySliderWithLabels>(&inGainParam, " dB", "Input Gain");
+    lowMidCrossoverSlider = std::make_unique<RotarySliderWithLabels>(&lowMidParam, " Hz", "Low Mid Crossover");
+    midHighCrossoverSlider = std::make_unique<RotarySliderWithLabels>(&midHighParam, " Hz", "Mid High Crossover");
+    outputGainSlider = std::make_unique<RotarySliderWithLabels>(&outGainParam, " dB", "Output Gain");
 
     makeAttachment(
         inputGainSliderAttachment,
@@ -449,6 +480,7 @@ void GlobalControls::resized()
 MBCompAudioProcessorEditor::MBCompAudioProcessorEditor(MBCompAudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p)
 {
+    setLookAndFeel(&lnf);
     //addAndMakeVisible(controlBar);
     //addAndMakeVisible(analyzer);
     addAndMakeVisible(globalControls);
@@ -459,6 +491,7 @@ MBCompAudioProcessorEditor::MBCompAudioProcessorEditor(MBCompAudioProcessor& p)
 
 MBCompAudioProcessorEditor::~MBCompAudioProcessorEditor()
 {
+    setLookAndFeel(nullptr);
 }
 
 //==============================================================================

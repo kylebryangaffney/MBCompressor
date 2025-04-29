@@ -23,20 +23,20 @@ struct LookAndFeel : juce::LookAndFeel_V4
 
 struct RotarySliderWithLabels : juce::Slider
 {
-    RotarySliderWithLabels(juce::RangedAudioParameter& rap, const juce::String& unitSuffix, const juce::String& title) :
+    RotarySliderWithLabels(juce::RangedAudioParameter* rap, const juce::String& unitSuffix, const juce::String& title) :
         juce::Slider(juce::Slider::SliderStyle::RotaryHorizontalVerticalDrag,
             juce::Slider::TextEntryBoxPosition::NoTextBox),
-        param(&rap),
+        param(rap),
         suffix(unitSuffix)
     {
         setName(title);
-        setLookAndFeel(&lnf);
+        //setLookAndFeel(&lnf);
     }
 
-    ~RotarySliderWithLabels()
-    {
-        setLookAndFeel(nullptr);
-    }
+    //~RotarySliderWithLabels()
+    //{
+        //setLookAndFeel(nullptr);
+    //}
 
     struct LabelPos
     {
@@ -50,8 +50,10 @@ struct RotarySliderWithLabels : juce::Slider
     juce::Rectangle<int> getSliderBounds() const;
     int getTextHeight() const { return 14; }
     juce::String getDisplayString() const;
+    void changeParam(juce::RangedAudioParameter* p);
 private:
-    LookAndFeel lnf;
+
+    //LookAndFeel lnf;
 
     juce::RangedAudioParameter* param;
     juce::String suffix;
@@ -132,12 +134,13 @@ void addLabelPairs(juce::Array<RotarySliderWithLabels::LabelPos>& labels,
 
 struct CompressorBandControls : juce::Component
 {
-    CompressorBandControls(juce::AudioProcessorValueTreeState& apvts);
+    CompressorBandControls(juce::AudioProcessorValueTreeState& tree);
     void resized() override;
     void paint(juce::Graphics& g) override;
 
 private:
-    RotarySlider attackSlider, releaseSlider, thresholdSlider, ratioSlider;
+    juce::AudioProcessorValueTreeState& apvts;
+    RotarySliderWithLabels attackSlider, releaseSlider, thresholdSlider, ratioSlider;
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
         attackSliderAttachment, releaseSliderAttachment, thresholdSliderAttachment, ratioSliderAttachment;
@@ -170,6 +173,7 @@ public:
     void resized() override;
 
 private:
+    LookAndFeel lnf;
 
     MBCompAudioProcessor& audioProcessor;
 
