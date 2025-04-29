@@ -271,6 +271,21 @@ void RotarySliderWithLabels::changeParam(juce::RangedAudioParameter* p)
     repaint();
 }
 
+juce::String RatioSlider::getDisplayString() const 
+{
+    auto choiceParam = dynamic_cast<juce::AudioParameterChoice*>(param);
+    jassert(choiceParam != nullptr);
+
+    auto currentChoice = choiceParam->getCurrentChoiceName();
+    if (currentChoice.contains(".0"))
+        currentChoice = currentChoice.substring(0, currentChoice.indexOf("."));
+
+    currentChoice << ":1";
+
+    return currentChoice;
+
+}
+
 Placeholder::Placeholder()
 {
     juce::Random r;
@@ -282,7 +297,7 @@ CompressorBandControls::CompressorBandControls(juce::AudioProcessorValueTreeStat
     attackSlider(nullptr, "ms", "Attack"),
     releaseSlider(nullptr, "ms", "Release"),
     thresholdSlider(nullptr, "dB", "Threshold"),
-    ratioSlider(nullptr, "", "Ratio")
+    ratioSlider(nullptr, "")
 {
     const auto& paramsMap = Parameters::GetParams();
 
