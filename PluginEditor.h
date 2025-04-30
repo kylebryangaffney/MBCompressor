@@ -110,9 +110,15 @@ struct RotarySlider : juce::Slider
 };
 
 inline void makeAttachment(std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>&
-    attachment, juce::AudioProcessorValueTreeState& apvts, const std::map<Parameters::Names, juce::String>& paramsMap, const Parameters::Names paramID, juce::Slider& slider)
+    attachment, juce::AudioProcessorValueTreeState& apvts, const std::map<Parameters::Names, juce::String>& paramsMap, const Parameters::Names paramID, juce::Slider& slider) noexcept
 {
     attachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(apvts, paramsMap.at(paramID), slider);
+}
+
+inline void makeAttachment(std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>&
+    attachment, juce::AudioProcessorValueTreeState& apvts, const std::map<Parameters::Names, juce::String>& paramsMap, const Parameters::Names paramID, juce::Button& button) noexcept
+{
+    attachment = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(apvts, paramsMap.at(paramID), button);
 }
 
 static juce::RangedAudioParameter& getRangedParam(juce::AudioProcessorValueTreeState& apvts, const std::map<Parameters::Names, juce::String>& paramsMap, Parameters::Names paramID)
@@ -146,6 +152,11 @@ private:
 
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
         attackSliderAttachment, releaseSliderAttachment, thresholdSliderAttachment, ratioSliderAttachment;
+
+    juce::ToggleButton bypassButton, soloButton, muteButton;
+
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> 
+        bypassButtonAttachment, soloButtonAttachment, muteButtonAttachment;
 
 };
 
