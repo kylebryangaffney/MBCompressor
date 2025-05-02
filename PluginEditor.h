@@ -53,7 +53,7 @@ protected:
 struct RatioSlider : RotarySliderWithLabels
 {
     RatioSlider(juce::RangedAudioParameter* rap,
-        const juce::String& unitSuffix) : RotarySliderWithLabels(rap, unitSuffix, "Ratio") 
+        const juce::String& unitSuffix) : RotarySliderWithLabels(rap, unitSuffix, "Ratio")
     {
     }
 
@@ -131,7 +131,7 @@ static juce::RangedAudioParameter& getRangedParam(juce::AudioProcessorValueTreeS
 }
 
 juce::String getValString(const juce::RangedAudioParameter& param,
-                          bool getLow, const juce::String& suffix);
+    bool getLow, const juce::String& suffix);
 
 bool truncateKiloValue(float& value);
 
@@ -153,9 +153,9 @@ private:
     std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment>
         attackSliderAttachment, releaseSliderAttachment, thresholdSliderAttachment, ratioSliderAttachment;
 
-    juce::ToggleButton bypassButton, soloButton, muteButton;
+    juce::ToggleButton bypassButton, soloButton, muteButton, lowBandButton, midBandButton, highBandButton;
 
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> 
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment>
         bypassButtonAttachment, soloButtonAttachment, muteButtonAttachment;
 
 };

@@ -285,7 +285,7 @@ void RotarySliderWithLabels::changeParam(juce::RangedAudioParameter* p)
     repaint();
 }
 
-juce::String RatioSlider::getDisplayString() const 
+juce::String RatioSlider::getDisplayString() const
 {
     auto choiceParam = dynamic_cast<juce::AudioParameterChoice*>(param);
     jassert(choiceParam != nullptr);
@@ -359,18 +359,18 @@ CompressorBandControls::CompressorBandControls(juce::AudioProcessorValueTreeStat
 
     ratioSlider.labels.add({ 0.f, "1:1" });
     auto ratioParam = dynamic_cast<juce::AudioParameterChoice*>(&getRangedParam(apvts, paramsMap, Parameters::Ratio_Mid_Band));
-    ratioSlider.labels.add({ 1.f, 
-        juce::String(ratioParam->choices.getReference(ratioParam->choices.size() - 1).getIntValue()) + ":1"});
+    ratioSlider.labels.add({ 1.f,
+        juce::String(ratioParam->choices.getReference(ratioParam->choices.size() - 1).getIntValue()) + ":1" });
 
     addLabelPairs(attackSlider.labels,
-                  getRangedParam(apvts, paramsMap, Parameters::Attack_Mid_Band),
-                  "ms");
+        getRangedParam(apvts, paramsMap, Parameters::Attack_Mid_Band),
+        "ms");
     addLabelPairs(releaseSlider.labels,
-                  getRangedParam(apvts, paramsMap, Parameters::Release_Mid_Band),
-                  "ms");
+        getRangedParam(apvts, paramsMap, Parameters::Release_Mid_Band),
+        "ms");
     addLabelPairs(thresholdSlider.labels,
-                  getRangedParam(apvts, paramsMap, Parameters::Threshold_Mid_Band),
-                  "dB");
+        getRangedParam(apvts, paramsMap, Parameters::Threshold_Mid_Band),
+        "dB");
 
     addAndMakeVisible(attackSlider);
     addAndMakeVisible(releaseSlider);
@@ -384,6 +384,18 @@ CompressorBandControls::CompressorBandControls(juce::AudioProcessorValueTreeStat
     addAndMakeVisible(bypassButton);
     addAndMakeVisible(soloButton);
     addAndMakeVisible(muteButton);
+
+    lowBandButton.setName("Low");
+    midBandButton.setName("Mid");
+    highBandButton.setName("High");
+
+    lowBandButton.setRadioGroupId(1);
+    midBandButton.setRadioGroupId(1);
+    highBandButton.setRadioGroupId(1);
+
+    addAndMakeVisible(lowBandButton);
+    addAndMakeVisible(midBandButton);
+    addAndMakeVisible(highBandButton);
 }
 
 
@@ -410,6 +422,7 @@ void CompressorBandControls::resized()
         };
 
     juce::FlexBox bandButtonControlBox = createBandButtonControlBox({ &bypassButton, &soloButton, &muteButton });
+    juce::FlexBox bandSelectControlBox = createBandButtonControlBox({ &lowBandButton, &midBandButton, &highBandButton });
 
     juce::FlexBox flexBox;
     flexBox.flexDirection = juce::FlexBox::Direction::row;
@@ -418,7 +431,9 @@ void CompressorBandControls::resized()
     auto spacer = juce::FlexItem().withWidth(4);
     auto endCap = juce::FlexItem().withHeight(6);
 
-    flexBox.items.add(endCap);
+    flexBox.items.add(spacer);
+    flexBox.items.add(juce::FlexItem(bandSelectControlBox).withWidth(50));
+    flexBox.items.add(spacer);
     flexBox.items.add(juce::FlexItem(attackSlider).withFlex(1.0f));
     flexBox.items.add(spacer);
     flexBox.items.add(juce::FlexItem(releaseSlider).withFlex(1.0f));
