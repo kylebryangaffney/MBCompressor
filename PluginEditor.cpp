@@ -317,6 +317,11 @@ CompressorBandControls::CompressorBandControls(juce::AudioProcessorValueTreeStat
     addAndMakeVisible(releaseSlider);
     addAndMakeVisible(ratioSlider);
     addAndMakeVisible(thresholdSlider);
+
+    bypassButton.addListener(this);
+    soloButton.addListener(this);
+    muteButton.addListener(this);
+
     bypassButton.setName("b");
     soloButton.setName("s");
     muteButton.setName("m");
@@ -352,6 +357,13 @@ CompressorBandControls::CompressorBandControls(juce::AudioProcessorValueTreeStat
     addAndMakeVisible(lowBandButton);
     addAndMakeVisible(midBandButton);
     addAndMakeVisible(highBandButton);
+}
+
+CompressorBandControls::~CompressorBandControls()
+{
+    bypassButton.removeListener(this);
+    soloButton.removeListener(this);
+    muteButton.removeListener(this);
 }
 
 
@@ -417,6 +429,40 @@ void drawModuleBackground(juce::Graphics& g, juce::Rectangle<int> bounds)
     g.fillRoundedRectangle(bounds.toFloat(), 3);
 
     g.drawRect(localBounds);
+}
+
+void CompressorBandControls::buttonClicked(juce::Button* button)
+{
+    updateSliderEnablements();
+    updateSoloMuteBypassToggleStates(*button);
+}
+
+void CompressorBandControls::updateSliderEnablements()
+{
+    bool disabled = muteButton.getToggleState() || bypassButton.getToggleState();
+    attackSlider.setEnabled(!disabled);
+    releaseSlider.setEnabled(!disabled);
+    ratioSlider.setEnabled(!disabled);
+    thresholdSlider.setEnabled(!disabled);
+}
+
+void CompressorBandControls::updateSoloMuteBypassToggleStates(juce::Button& clickedButton)
+{
+    if (&clickedButton == &soloButton && soloButton.getToggleState())
+    {
+        bypassButton.setToggleState(false, juce::NotificationType::sendNotification);
+        muteButton.setToggleState(false, juce::NotificationType::sendNotification);
+    }
+    else if (&clickedButton == &muteButton && muteButton.getToggleState())
+    {
+        bypassButton.setToggleState(false, juce::NotificationType::sendNotification);
+        soloButton.setToggleState(false, juce::NotificationType::sendNotification);
+    }
+    else if (&clickedButton == &bypassButton && bypassButton.getToggleState())
+    {
+        soloButton.setToggleState(false, juce::NotificationType::sendNotification);
+        muteButton.setToggleState(false, juce::NotificationType::sendNotification);
+    }
 }
 
 void CompressorBandControls::paint(juce::Graphics& g)

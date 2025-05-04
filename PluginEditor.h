@@ -139,11 +139,14 @@ void addLabelPairs(juce::Array<RotarySliderWithLabels::LabelPos>& labels,
     const juce::RangedAudioParameter& param,
     const juce::String& suffix);
 
-struct CompressorBandControls : juce::Component
+struct CompressorBandControls : juce::Component, juce::Button::Listener
 {
     CompressorBandControls(juce::AudioProcessorValueTreeState& tree);
+    ~CompressorBandControls() override;
     void resized() override;
     void paint(juce::Graphics& g) override;
+
+    void buttonClicked(juce::Button* button) override;
 
 private:
     juce::AudioProcessorValueTreeState& apvts;
@@ -161,6 +164,8 @@ private:
     juce::Component::SafePointer<CompressorBandControls> safePtr{ this };
 
     void updateAttachments();
+    void updateSliderEnablements();
+    void updateSoloMuteBypassToggleStates(juce::Button& clickedButton);
 
 };
 
