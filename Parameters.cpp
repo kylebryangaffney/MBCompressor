@@ -1,0 +1,55 @@
+/*
+  ==============================================================================
+
+    Parameters.cpp
+    Created: 6 May 2025 10:42:42am
+    Author:  kyleb
+
+  ==============================================================================
+*/
+
+#include "Parameters.h"
+
+namespace Parameters
+{
+    inline const std::map<Names, juce::String>& GetParams()
+    {
+        static std::map<Names, juce::String> paramsMap =
+        {
+            { Low_Mid_Crossover_Freq,  "Low-Mid Crossover Frequency" },
+            { Mid_High_Crossover_Freq, "Mid-High Crossover Frequency" },
+
+            { Threshold_Low_Band,  "Threshold Low Band" },
+            { Threshold_Mid_Band,  "Threshold Mid Band" },
+            { Threshold_High_Band, "Threshold High Band" },
+
+            { Attack_Low_Band,  "Attack Low Band" },
+            { Attack_Mid_Band,  "Attack Mid Band" },
+            { Attack_High_Band, "Attack High Band" },
+
+            { Release_Low_Band,  "Release Low Band" },
+            { Release_Mid_Band,  "Release Mid Band" },
+            { Release_High_Band, "Release High Band" },
+
+            { Ratio_Low_Band,  "Ratio Low Band" },
+            { Ratio_Mid_Band,  "Ratio Mid Band" },
+            { Ratio_High_Band, "Ratio High Band" },
+
+            { Bypassed_Low_Band,  "Bypassed Low Band" },
+            { Bypassed_Mid_Band,  "Bypassed Mid Band" },
+            { Bypassed_High_Band, "Bypassed High Band" },
+
+            { Mute_Low_Band,  "Mute Low Band" },
+            { Mute_Mid_Band,  "Mute Mid Band" },
+            { Mute_High_Band, "Mute High Band" },
+
+            { Solo_Low_Band,  "Solo Low Band" },
+            { Solo_Mid_Band,  "Solo Mid Band" },
+            { Solo_High_Band, "Solo High Band" },
+
+            { Input_Gain,  "Input Gain" },
+            { Output_Gain, "Output Gain" },
+        };
+        return paramsMap;
+    }
+}
