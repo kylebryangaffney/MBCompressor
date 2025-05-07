@@ -1,20 +1,10 @@
-/*
-  ==============================================================================
-
-    Parameters.cpp
-    Created: 6 May 2025 10:42:42am
-    Author:  kyleb
-
-  ==============================================================================
-*/
-
 #include "Parameters.h"
 
 namespace Parameters
 {
-    inline const std::map<Names, juce::String>& GetParams()
+    const std::map<Names, juce::String>& GetParams()
     {
-        static std::map<Names, juce::String> paramsMap =
+        static const std::map<Names, juce::String> paramsMap =
         {
             { Low_Mid_Crossover_Freq,  "Low-Mid Crossover Frequency" },
             { Mid_High_Crossover_Freq, "Mid-High Crossover Frequency" },
@@ -50,6 +40,8 @@ namespace Parameters
             { Input_Gain,  "Input Gain" },
             { Output_Gain, "Output Gain" },
         };
+
         return paramsMap;
     }
 }
+

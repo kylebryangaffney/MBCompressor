@@ -1,16 +1,15 @@
 /*
   ==============================================================================
-
     UtilityFunctions.cpp
     Created: 6 May 2025 10:01:57am
     Author:  kyleb
-
   ==============================================================================
 */
 
 #include "UtilityFunctions.h"
 
-
+//==============================================================================
+// Truncate a value above 999 down by 1000 and signal with 'k'
 bool truncateKiloValue(float& value)
 {
     if (value > 999.0f)
@@ -22,18 +21,18 @@ bool truncateKiloValue(float& value)
     return false;
 }
 
+//==============================================================================
+// Build a display string for the low or high end of a parameter, adding "k"
 juce::String getValString(const juce::RangedAudioParameter& param,
-    bool getLow, const juce::String& suffix)
+    bool getLow,
+    const juce::String& suffix)
 {
-    // pick the range endpoint
     float v = getLow
         ? param.getNormalisableRange().start
         : param.getNormalisableRange().end;
 
-    // truncate to “k” if needed
     const bool useK = truncateKiloValue(v);
 
-    // build string: number, optional “k”, then suffix
     juce::String s;
     s << v;
     if (useK)
@@ -43,6 +42,8 @@ juce::String getValString(const juce::RangedAudioParameter& param,
     return s;
 }
 
+//==============================================================================
+// Populate label positions at 0.0f and 1.0f with formatted values
 void addLabelPairs(juce::Array<RotarySliderWithLabels::LabelPos>& labels,
     const juce::RangedAudioParameter& param,
     const juce::String& suffix)
@@ -52,11 +53,31 @@ void addLabelPairs(juce::Array<RotarySliderWithLabels::LabelPos>& labels,
     labels.add({ 1.0f, getValString(param, false, suffix) });
 }
 
-static juce::RangedAudioParameter& getRangedParam(juce::AudioProcessorValueTreeState& apvts, const std::map<Parameters::Names, juce::String>& paramsMap, Parameters::Names paramID)
+//==============================================================================
+// Internal helper to grab a RangedAudioParameter by ID
+juce::RangedAudioParameter& getRangedParam(
+    juce::AudioProcessorValueTreeState& apvts,
+    const std::map<Parameters::Names, juce::String>& paramsMap,
+    Parameters::Names paramID)
 {
-    auto* param = dynamic_cast<juce::RangedAudioParameter*>(apvts.getParameter(paramsMap.at(paramID)));
-    jassert(param != nullptr);
+    auto* p = dynamic_cast<juce::RangedAudioParameter*>(
+        apvts.getParameter(paramsMap.at(paramID)));
+    jassert(p != nullptr);
+    return *p;
+}
 
-    return *param;
+//==============================================================================
+// Draw a module background with full fill, rounded inner rect, and outline
+void drawModuleBackground(juce::Graphics& g,
+    juce::Rectangle<int> bounds)
+{
+    g.setColour(juce::Colours::blueviolet);
+    g.fillAll();
 
+    auto localBounds = bounds;
+    bounds.reduce(3, 3);
+    g.setColour(juce::Colours::black);
+    g.fillRoundedRectangle(bounds.toFloat(), 3);
+
+    g.drawRect(localBounds);
 }

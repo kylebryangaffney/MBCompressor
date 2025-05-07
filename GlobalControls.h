@@ -10,7 +10,7 @@
 
 #pragma once
 #include <JuceHeader.h>
-#include "RotarySliderWithlabels.h"
+#include "RotarySliderWithLabels.h"
 #include "UtilityComponents.h"
 #include "UtilityFunctions.h"
 

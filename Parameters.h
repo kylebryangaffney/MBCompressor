@@ -1,14 +1,5 @@
-/*
-  ==============================================================================
-
-    Parameters.h
-    Created: 6 May 2025 10:42:42am
-    Author:  kyleb
-
-  ==============================================================================
-*/
-
 #pragma once
+
 #include <JuceHeader.h>
 #include <map>
 
@@ -52,5 +43,5 @@ namespace Parameters
     };
 
     /** Returns a map from each enum to its display name */
-    inline const std::map<Names, juce::String>& GetParams();
+    const std::map<Names, juce::String>& GetParams();
 }
