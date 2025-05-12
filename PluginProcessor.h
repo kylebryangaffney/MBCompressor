@@ -9,8 +9,8 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "Parameters.h"
-#include "CompressorBand.h"
+#include "Service/Parameters.h"
+#include "DSP/CompressorBand.h"
 
 
 class MBCompAudioProcessor : public juce::AudioProcessor

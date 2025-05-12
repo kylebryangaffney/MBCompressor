@@ -12,7 +12,7 @@
 #include <JuceHeader.h>
 #include "RotarySliderWithlabels.h"
 #include "UtilityComponents.h"
-#include "UtilityFunctions.h"
+#include "../Service/UtilityFunctions.h"
 
 struct CompressorBandControls : juce::Component, juce::Button::Listener
 {
@@ -38,8 +38,19 @@ private:
 
     juce::Component::SafePointer<CompressorBandControls> safePtr{ this };
 
+    juce::ToggleButton* activeBand = &lowBandButton;
+
     void updateAttachments();
     void updateSliderEnablements();
     void updateSoloMuteBypassToggleStates(juce::Button& clickedButton);
-
+    void updateActiveBandFillColors(juce::Button& clickedButton);
+    void resetActiveBandColors();
+    static void refreshBandButtonColors(juce::Button& band, juce::Button& colorSource);
+    void updateBandSelectButtonStates();
+    
 };
+
+static juce::AudioParameterBool* getBoolParam(
+    juce::AudioProcessorValueTreeState& apvts,
+    const std::map<Parameters::Names, juce::String>& paramsMap,
+    Parameters::Names paramID);

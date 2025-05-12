@@ -3,13 +3,13 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
-#include "LookAndFeel.h"
-#include "PluginButtons.h"
-#include "RotarySliderWithLabels.h"
-#include "UtilityComponents.h"
-#include "UtilityFunctions.h"
-#include "CompressorBandControls.h"
-#include "GlobalControls.h"
+#include "GUI/LookAndFeel.h"
+#include "GUI/PluginButtons.h"
+#include "GUI/RotarySliderWithLabels.h"
+#include "GUI/UtilityComponents.h"
+#include "Service/UtilityFunctions.h"
+#include "GUI/CompressorBandControls.h"
+#include "GUI/GlobalControls.h"
 
 
 

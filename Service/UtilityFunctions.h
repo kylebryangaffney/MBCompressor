@@ -3,8 +3,8 @@
 #include <JuceHeader.h>
 #include <map>
 #include <memory>
-#include "PluginProcessor.h"
-#include "RotarySliderWithLabels.h"
+#include "../PluginProcessor.h"
+#include "../GUI/RotarySliderWithLabels.h"
 #include "Parameters.h"
 
 //==============================================================================

@@ -12,7 +12,7 @@
 #include <JuceHeader.h>
 #include "RotarySliderWithLabels.h"
 #include "UtilityComponents.h"
-#include "UtilityFunctions.h"
+#include "../Service/UtilityFunctions.h"
 
 struct GlobalControls : juce::Component
 {

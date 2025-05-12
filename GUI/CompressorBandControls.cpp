@@ -28,16 +28,28 @@ CompressorBandControls::CompressorBandControls(juce::AudioProcessorValueTreeStat
     muteButton.addListener(this);
 
     bypassButton.setName("b");
+    bypassButton.setColour(juce::TextButton::ColourIds::buttonOnColourId, juce::Colours::blue);
+    bypassButton.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::black);
     soloButton.setName("s");
+    soloButton.setColour(juce::TextButton::ColourIds::buttonOnColourId, juce::Colours::yellow);
+    soloButton.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::black);
     muteButton.setName("m");
+    muteButton.setColour(juce::TextButton::ColourIds::buttonOnColourId, juce::Colours::red);
+    muteButton.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::black);
 
     addAndMakeVisible(bypassButton);
     addAndMakeVisible(soloButton);
     addAndMakeVisible(muteButton);
 
     lowBandButton.setName("Low");
+    lowBandButton.setColour(juce::TextButton::ColourIds::buttonOnColourId, juce::Colours::grey);
+    lowBandButton.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::black);
     midBandButton.setName("Mid");
+    midBandButton.setColour(juce::TextButton::ColourIds::buttonOnColourId, juce::Colours::grey);
+    midBandButton.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::black);
     highBandButton.setName("High");
+    highBandButton.setColour(juce::TextButton::ColourIds::buttonOnColourId, juce::Colours::grey);
+    highBandButton.setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::black);
 
     lowBandButton.setRadioGroupId(1);
     midBandButton.setRadioGroupId(1);
@@ -57,7 +69,10 @@ CompressorBandControls::CompressorBandControls(juce::AudioProcessorValueTreeStat
     highBandButton.onClick = buttonSwitcher;
 
     lowBandButton.setToggleState(true, juce::NotificationType::dontSendNotification);
+    
     updateAttachments();
+    updateSliderEnablements();
+    updateBandSelectButtonStates();
 
     addAndMakeVisible(lowBandButton);
     addAndMakeVisible(midBandButton);
@@ -120,13 +135,89 @@ void CompressorBandControls::resized()
     flexBox.performLayout(bounds);
 
 }
+void CompressorBandControls::updateBandSelectButtonStates()
+{
+    const auto& paramsMap = Parameters::GetParams();
+
+    // three IDs per band: { Solo, Mute, Bypassed }
+    std::vector<std::array<Parameters::Names, 3>> parametersToCheck
+    {
+        {{ Parameters::Solo_Low_Band,   Parameters::Mute_Low_Band,   Parameters::Bypassed_Low_Band   }},
+        {{ Parameters::Solo_Mid_Band,   Parameters::Mute_Mid_Band,   Parameters::Bypassed_Mid_Band   }},
+        {{ Parameters::Solo_High_Band,  Parameters::Mute_High_Band,  Parameters::Bypassed_High_Band  }}
+    };
+
+    for (size_t i = 0; i < parametersToCheck.size(); ++i)
+    {
+        // pick the right radio button
+        juce::ToggleButton* bandButton = (i == 0) ? &lowBandButton
+            : (i == 1) ? &midBandButton
+            : &highBandButton;
+
+        auto& ids = parametersToCheck[i];
+
+        // Solo?
+        if (auto* p = getBoolParam(apvts, paramsMap, ids[0]); p && p->get())
+        {
+            refreshBandButtonColors(*bandButton, soloButton);
+            continue;
+        }
+        // Mute?
+        if (auto* p = getBoolParam(apvts, paramsMap, ids[1]); p && p->get())
+        {
+            refreshBandButtonColors(*bandButton, muteButton);
+            continue;
+        }
+        // Bypass?
+        if (auto* p = getBoolParam(apvts, paramsMap, ids[2]); p && p->get())
+        {
+            refreshBandButtonColors(*bandButton, bypassButton);
+            continue;
+        }
+        // none reset
+        resetActiveBandColors();
+    }
+}
 
 
 void CompressorBandControls::buttonClicked(juce::Button* button)
 {
     updateSliderEnablements();
     updateSoloMuteBypassToggleStates(*button);
+    updateActiveBandFillColors(*button);
 }
+
+void CompressorBandControls::updateActiveBandFillColors(juce::Button& clickedButton)
+{
+    jassert(activeBand != nullptr);
+    DBG("active band: " << activeBand->getName());
+
+    if (clickedButton.getToggleState() == false)
+    {
+        resetActiveBandColors();
+    }
+    else
+    {
+        refreshBandButtonColors(*activeBand, clickedButton);
+    }
+}
+
+void CompressorBandControls::resetActiveBandColors()
+{
+    activeBand->setColour(juce::TextButton::ColourIds::buttonOnColourId, juce::Colours::grey);
+    activeBand->setColour(juce::TextButton::ColourIds::buttonColourId, juce::Colours::black);
+    activeBand->repaint();
+}
+
+void CompressorBandControls::refreshBandButtonColors(juce::Button& band, juce::Button& colorSource)
+{
+    band.setColour(juce::TextButton::ColourIds::buttonOnColourId,
+        colorSource.findColour(juce::TextButton::ColourIds::buttonOnColourId));
+    band.setColour(juce::TextButton::ColourIds::buttonColourId,
+        colorSource.findColour(juce::TextButton::ColourIds::buttonOnColourId));
+    band.repaint();
+}
+
 
 void CompressorBandControls::updateSliderEnablements()
 {
@@ -185,6 +276,7 @@ void CompressorBandControls::updateAttachments()
         muteID = Parameters::Mute_Low_Band;
         soloID = Parameters::Solo_Low_Band;
         bypassID = Parameters::Bypassed_Low_Band;
+        activeBand = &lowBandButton;
         break;
 
     case Mid:
@@ -195,6 +287,7 @@ void CompressorBandControls::updateAttachments()
         muteID = Parameters::Mute_Mid_Band;
         soloID = Parameters::Solo_Mid_Band;
         bypassID = Parameters::Bypassed_Mid_Band;
+        activeBand = &midBandButton;
         break;
 
     case High:
@@ -205,6 +298,7 @@ void CompressorBandControls::updateAttachments()
         muteID = Parameters::Mute_High_Band;
         soloID = Parameters::Solo_High_Band;
         bypassID = Parameters::Bypassed_High_Band;
+        activeBand = &highBandButton;
         break;
     }
 
@@ -259,3 +353,14 @@ void CompressorBandControls::updateAttachments()
     makeAttachment(bypassButtonAttachment, apvts, paramsMap, bypassID, bypassButton);
 }
 
+juce::AudioParameterBool* getBoolParam(
+    juce::AudioProcessorValueTreeState& apvts,
+    const std::map<Parameters::Names, juce::String>& paramsMap,
+    Parameters::Names paramID)
+{
+    auto* baseParam = apvts.getParameter(paramsMap.at(paramID));
+
+    auto* boolParam = dynamic_cast<juce::AudioParameterBool*>(baseParam);
+    jassert(boolParam != nullptr);
+    return boolParam;
+}
