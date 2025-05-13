@@ -139,7 +139,6 @@ void CompressorBandControls::updateBandSelectButtonStates()
 {
     const auto& paramsMap = Parameters::GetParams();
 
-    // three IDs per band: { Solo, Mute, Bypassed }
     std::vector<std::array<Parameters::Names, 3>> parametersToCheck
     {
         {{ Parameters::Solo_Low_Band,   Parameters::Mute_Low_Band,   Parameters::Bypassed_Low_Band   }},
@@ -149,32 +148,27 @@ void CompressorBandControls::updateBandSelectButtonStates()
 
     for (size_t i = 0; i < parametersToCheck.size(); ++i)
     {
-        // pick the right radio button
         juce::ToggleButton* bandButton = (i == 0) ? &lowBandButton
             : (i == 1) ? &midBandButton
             : &highBandButton;
 
         auto& ids = parametersToCheck[i];
 
-        // Solo?
         if (auto* p = getBoolParam(apvts, paramsMap, ids[0]); p && p->get())
         {
             refreshBandButtonColors(*bandButton, soloButton);
             continue;
         }
-        // Mute?
         if (auto* p = getBoolParam(apvts, paramsMap, ids[1]); p && p->get())
         {
             refreshBandButtonColors(*bandButton, muteButton);
             continue;
         }
-        // Bypass?
         if (auto* p = getBoolParam(apvts, paramsMap, ids[2]); p && p->get())
         {
             refreshBandButtonColors(*bandButton, bypassButton);
             continue;
         }
-        // none reset
         resetActiveBandColors();
     }
 }

@@ -10,6 +10,7 @@
 #include "Service/UtilityFunctions.h"
 #include "GUI/CompressorBandControls.h"
 #include "GUI/GlobalControls.h"
+#include "GUI/SpectralAnalyzer.h"
 
 
 
@@ -30,9 +31,10 @@ private:
 
     MBCompAudioProcessor& audioProcessor;
 
-    Placeholder controlBar, analyzer;
+    Placeholder controlBar;
     GlobalControls globalControls{ audioProcessor.apvts };
     CompressorBandControls bandControls{ audioProcessor.apvts };
+    SpectralAnalyzerComponent analyzer;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MBCompAudioProcessorEditor)
 };
