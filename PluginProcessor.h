@@ -11,15 +11,9 @@
 #include <JuceHeader.h>
 #include "Service/Parameters.h"
 #include "DSP/CompressorBand.h"
-#include "DSP//FIFO.h"
+#include "DSP/ChannelEnum.h"               
+#include "DSP/FIFO.h"                      
 #include "DSP/SingleChannelSampleFIFO.h"
-
-enum Channel
-{
-    Right, //effectively 0
-    Left //effectively 1
-};
-
 
 
 class MBCompAudioProcessor : public juce::AudioProcessor

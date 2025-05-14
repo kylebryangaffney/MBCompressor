@@ -19,5 +19,7 @@ struct AnalyzerButton : juce::ToggleButton
 {
     void resized() override;
     juce::Path randomPath;
+private:
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(AnalyzerButton)
 };
 

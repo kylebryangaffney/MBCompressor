@@ -1,6 +1,6 @@
 #pragma once
 #include <JuceHeader.h>
-#include "../PluginProcessor.h"
+#include "../DSP/ChannelEnum.h"
 #include "FIFO.h"
 
 
@@ -28,4 +28,6 @@ private:
     BlockType bufferToFill;
     juce::Atomic<bool> prepared{ false };
     juce::Atomic<int> size{ 0 };
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SingleChannelSampleFifo)
 };

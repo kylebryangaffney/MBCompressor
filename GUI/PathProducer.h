@@ -11,28 +11,29 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "../DSP/ChannelEnum.h"
 #include "../PluginProcessor.h"
 #include "../DSP/SingleChannelSampleFIFO.h"
 #include "../DSP/FIFO.h"
+#include "FFTDataGenerator.h"
+#include "AnalyzerPathGenerator.h"
 
-struct PathProducer
+
+class PathProducer
 {
-    PathProducer(SingleChannelSampleFifo<MBCompAudioProcessor::juce::Audiobuffer<float>>& scsf) :
-        leftChannelFifo(&scsf)
-    {
-        leftChannelFFTDataGenerator.changeOrder(FFTOrder::order2048);
-        monoBuffer.setSize(1, leftChannelFFTDataGenerator.getFFTSize());
-    }
+public:
+    explicit PathProducer(SingleChannelSampleFifo<juce::AudioBuffer<float>>& scsf);
+
     void process(juce::Rectangle<float> fftBounds, double sampleRate);
-    juce::Path getPath() { return leftChannelFFTPath; }
+    juce::Path getPath() const;
+
 private:
-    SingleChannelSampleFifo<MBCompAudioProcessor::juce::Audiobuffer<float>>* leftChannelFifo;
+    SingleChannelSampleFifo<juce::AudioBuffer<float>>* leftChannelFifo;
 
     juce::AudioBuffer<float> monoBuffer;
-
-    FFTDataGenerator<std::vector<float>> leftChannelFFTDataGenerator;
-
-    AnalyzerPathGenerator<juce::Path> pathProducer;
+    FFTDataGenerator leftChannelFFTDataGenerator;
+    AnalyzerPathGenerator pathProducer;
 
     juce::Path leftChannelFFTPath;
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PathProducer)
 };

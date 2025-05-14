@@ -47,6 +47,8 @@ private:
     void resetActiveBandColors();
     static void refreshBandButtonColors(juce::Button& band, juce::Button& colorSource);
     void updateBandSelectButtonStates();
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CompressorBandControls)
     
 };
 

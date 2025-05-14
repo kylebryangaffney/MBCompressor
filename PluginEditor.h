@@ -2,6 +2,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "DSP/ChannelEnum.h"
 #include "PluginProcessor.h"
 #include "GUI/LookAndFeel.h"
 #include "GUI/PluginButtons.h"
@@ -11,7 +12,6 @@
 #include "GUI/CompressorBandControls.h"
 #include "GUI/GlobalControls.h"
 #include "GUI/SpectralAnalyzer.h"
-
 
 
 /**

@@ -30,4 +30,6 @@ struct CompressorBand
 private:
     juce::dsp::Compressor<float> compressor;
 
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CompressorBand)
+
 };
