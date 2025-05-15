@@ -22,8 +22,6 @@ SpectralAnalyzerComponent::SpectralAnalyzerComponent(MBCompAudioProcessor& p) :
         param->addListener(this);
     }
 
-    //updateChain();
-
     startTimerHz(60);
 }
 
@@ -36,74 +34,6 @@ SpectralAnalyzerComponent::~SpectralAnalyzerComponent()
     }
 }
 
-//void SpectralAnalyzerComponent::updateResponseCurve()
-//{
-//    using namespace juce;
-//    auto responseArea = getAnalysisArea();
-//
-//    auto w = responseArea.getWidth();
-//
-//    auto& lowcut = monoChain.get<ChainPositions::LowCut>();
-//    auto& peak = monoChain.get<ChainPositions::Peak>();
-//    auto& highcut = monoChain.get<ChainPositions::HighCut>();
-//
-//    auto sampleRate = audioProcessor.getSampleRate();
-//
-//    std::vector<double> mags;
-//
-//    mags.resize(w);
-//
-//    for (int i = 0; i < w; ++i)
-//    {
-//        double mag = 1.f;
-//        auto freq = mapToLog10(double(i) / double(w), 20.0, 20000.0);
-//
-//        if (!monoChain.isBypassed<ChainPositions::Peak>())
-//            mag *= peak.coefficients->getMagnitudeForFrequency(freq, sampleRate);
-//
-//        if (!monoChain.isBypassed<ChainPositions::LowCut>())
-//        {
-//            if (!lowcut.isBypassed<0>())
-//                mag *= lowcut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
-//            if (!lowcut.isBypassed<1>())
-//                mag *= lowcut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
-//            if (!lowcut.isBypassed<2>())
-//                mag *= lowcut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
-//            if (!lowcut.isBypassed<3>())
-//                mag *= lowcut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
-//        }
-//
-//        if (!monoChain.isBypassed<ChainPositions::HighCut>())
-//        {
-//            if (!highcut.isBypassed<0>())
-//                mag *= highcut.get<0>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
-//            if (!highcut.isBypassed<1>())
-//                mag *= highcut.get<1>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
-//            if (!highcut.isBypassed<2>())
-//                mag *= highcut.get<2>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
-//            if (!highcut.isBypassed<3>())
-//                mag *= highcut.get<3>().coefficients->getMagnitudeForFrequency(freq, sampleRate);
-//        }
-//
-//        mags[i] = Decibels::gainToDecibels(mag);
-//    }
-//
-//    responseCurve.clear();
-//
-//    const double outputMin = responseArea.getBottom();
-//    const double outputMax = responseArea.getY();
-//    auto map = [outputMin, outputMax](double input)
-//        {
-//            return jmap(input, -24.0, 24.0, outputMin, outputMax);
-//        };
-//
-//    responseCurve.startNewSubPath(responseArea.getX(), map(mags.front()));
-//
-//    for (size_t i = 1; i < mags.size(); ++i)
-//    {
-//        responseCurve.lineTo(responseArea.getX() + i, map(mags[i]));
-//    }
-//}
 
 void SpectralAnalyzerComponent::paint(juce::Graphics& g)
 {
@@ -295,8 +225,6 @@ void SpectralAnalyzerComponent::resized()
 {
     using namespace juce;
 
-    //responseCurve.preallocateSpace(getWidth() * 3);
-    //updateResponseCurve();
 }
 
 void SpectralAnalyzerComponent::parameterValueChanged(int parameterIndex, float newValue)
@@ -304,44 +232,6 @@ void SpectralAnalyzerComponent::parameterValueChanged(int parameterIndex, float 
     parametersChanged.set(true);
 }
 
-void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate)
-{
-    juce::AudioBuffer<float> tempIncomingBuffer;
-    while (leftChannelFifo->getNumCompleteBuffersAvailable() > 0)
-    {
-        if (leftChannelFifo->getAudioBuffer(tempIncomingBuffer))
-        {
-            auto size = tempIncomingBuffer.getNumSamples();
-
-            juce::FloatVectorOperations::copy(monoBuffer.getWritePointer(0, 0),
-                monoBuffer.getReadPointer(0, size),
-                monoBuffer.getNumSamples() - size);
-
-            juce::FloatVectorOperations::copy(monoBuffer.getWritePointer(0, monoBuffer.getNumSamples() - size),
-                tempIncomingBuffer.getReadPointer(0, 0),
-                size);
-
-            leftChannelFFTDataGenerator.produceFFTDataForRendering(monoBuffer, -48.f);
-        }
-    }
-
-    const auto fftSize = leftChannelFFTDataGenerator.getFFTSize();
-    const auto binWidth = sampleRate / double(fftSize);
-
-    while (leftChannelFFTDataGenerator.getNumAvailableFFTDataBlocks() > 0)
-    {
-        std::vector<float> fftData;
-        if (leftChannelFFTDataGenerator.getFFTData(fftData))
-        {
-            pathProducer.generatePath(fftData, fftBounds, fftSize, binWidth, -48.f);
-        }
-    }
-
-    while (pathProducer.getNumPathsAvailable() > 0)
-    {
-        pathProducer.getPath(leftChannelFFTPath);
-    }
-}
 
 void SpectralAnalyzerComponent::timerCallback()
 {
@@ -353,38 +243,9 @@ void SpectralAnalyzerComponent::timerCallback()
         leftPathProducer.process(fftBounds, sampleRate);
         rightPathProducer.process(fftBounds, sampleRate);
     }
-
-   /* if (parametersChanged.compareAndSetBool(false, true))
-    {
-        updateChain();
-        updateResponseCurve();
-    }*/
-
     repaint();
 }
-//
-//void SpectralAnalyzerComponent::updateChain()
-//{
-//    auto chainSettings = getChainSettings(audioProcessor.apvts);
-//
-//    monoChain.setBypassed<ChainPositions::LowCut>(chainSettings.lowCutBypassed);
-//    monoChain.setBypassed<ChainPositions::Peak>(chainSettings.peakBypassed);
-//    monoChain.setBypassed<ChainPositions::HighCut>(chainSettings.highCutBypassed);
-//
-//    auto peakCoefficients = makePeakFilter(chainSettings, audioProcessor.getSampleRate());
-//    updateCoefficients(monoChain.get<ChainPositions::Peak>().coefficients, peakCoefficients);
-//
-//    auto lowCutCoefficients = makeLowCutFilter(chainSettings, audioProcessor.getSampleRate());
-//    auto highCutCoefficients = makeHighCutFilter(chainSettings, audioProcessor.getSampleRate());
-//
-//    updateCutFilter(monoChain.get<ChainPositions::LowCut>(),
-//        lowCutCoefficients,
-//        chainSettings.lowCutSlope);
-//
-//    updateCutFilter(monoChain.get<ChainPositions::HighCut>(),
-//        highCutCoefficients,
-//        chainSettings.highCutSlope);
-//}
+
 
 juce::Rectangle<int> SpectralAnalyzerComponent::getRenderArea()
 {

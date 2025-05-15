@@ -14,6 +14,7 @@
 
 struct CompressorBand
 {
+    CompressorBand() = default;
 
     juce::AudioParameterFloat* attack{ nullptr };
     juce::AudioParameterFloat* release{ nullptr };

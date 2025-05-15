@@ -6,7 +6,11 @@
 
 //==============================================================================
 MBCompAudioProcessorEditor::MBCompAudioProcessorEditor(MBCompAudioProcessor& p)
-    : AudioProcessorEditor(&p), audioProcessor(p)
+    : AudioProcessorEditor(&p),
+    audioProcessor(p),
+    analyzer(p),
+    globalControls(audioProcessor.apvts),
+    bandControls(audioProcessor.apvts)
 {
     setLookAndFeel(&lnf);
     //addAndMakeVisible(controlBar);

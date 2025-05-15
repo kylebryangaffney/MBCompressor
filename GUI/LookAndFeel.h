@@ -17,6 +17,7 @@
 
 struct LookAndFeel : juce::LookAndFeel_V4
 {
+    LookAndFeel() = default;
     void drawRotarySlider(juce::Graphics&,
         int x, int y, int width, int height,
         float sliderPosProportional,

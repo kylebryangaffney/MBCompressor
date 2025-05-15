@@ -41,11 +41,6 @@ private:
 
     juce::Atomic<bool> parametersChanged{ false };
 
-    //MonoChain monoChain;
-    //void updateResponseCurve();
-    //juce::Path responseCurve;
-    //void updateChain();
-
     void drawBackgroundGrid(juce::Graphics& g);
     void drawTextLabels(juce::Graphics& g);
 
