@@ -168,16 +168,19 @@ void MBCompAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     LPFilter2.prepare(spec);
     HPFilter2.prepare(spec);
 
-    for (auto& buffer : filterBufferArray)
-    {
-        buffer.setSize(spec.numChannels, samplesPerBlock);
-    }
-
     inputGain.prepare(spec);
     outputGain.prepare(spec);
 
     inputGain.setRampDurationSeconds(0.05); // 50ms
     outputGain.setRampDurationSeconds(0.05); // 50ms
+
+    for (auto& buffer : filterBufferArray)
+    {
+        buffer.setSize(spec.numChannels, samplesPerBlock);
+    }
+    
+    leftChannelFifo.prepare(samplesPerBlock);
+    rightChannelFifo.prepare(samplesPerBlock);
 }
 
 void MBCompAudioProcessor::releaseResources()
@@ -266,6 +269,9 @@ void MBCompAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
         buffer.clear(i, 0, buffer.getNumSamples());
 
     updateState();
+
+    leftChannelFifo.update(buffer);
+    rightChannelFifo.update(buffer);
 
     applyGain(buffer, inputGain);
 
