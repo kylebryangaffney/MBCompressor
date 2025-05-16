@@ -98,6 +98,9 @@ private:
     void updateState();
     void splitBands(const juce::AudioBuffer<float>& inputBuffer);
 
+    juce::dsp::Oscillator<float> osc;
+    juce::dsp::Gain<float> oscGain;
+
     //================================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MBCompAudioProcessor)
 };

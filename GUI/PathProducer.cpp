@@ -37,7 +37,7 @@ void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate)
                 tempIncomingBuffer.getReadPointer(0, 0),
                 size);
 
-            leftChannelFFTDataGenerator.produceFFTDataForRendering(monoBuffer, -48.0f);
+            leftChannelFFTDataGenerator.produceFFTDataForRendering(monoBuffer, negativeInfinity);
         }
     }
 
@@ -49,7 +49,7 @@ void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate)
         std::vector<float> fftData;
         if (leftChannelFFTDataGenerator.getFFTData(fftData))
         {
-            pathProducer.generatePath(fftData, fftBounds, fftSize, binWidth, -48.0f);
+            pathProducer.generatePath(fftData, fftBounds, fftSize, binWidth, negativeInfinity);
         }
     }
 
@@ -62,4 +62,9 @@ void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate)
 juce::Path PathProducer::getPath() const
 {
     return leftChannelFFTPath;
+}
+
+void PathProducer::setNegativeInfinity(float newValue)
+{
+    negativeInfinity = newValue;
 }

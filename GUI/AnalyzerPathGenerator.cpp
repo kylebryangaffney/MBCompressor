@@ -17,7 +17,7 @@ void AnalyzerPathGenerator::generatePath(const std::vector<float>& renderData,
     float negativeInfinity)
 {
     const float top = fftBounds.getY();
-    const float bottom = fftBounds.getHeight();
+    const float bottom = fftBounds.getBottom();
     const float width = fftBounds.getWidth();
 
     const int numBins = fftSize / 2;
@@ -27,7 +27,7 @@ void AnalyzerPathGenerator::generatePath(const std::vector<float>& renderData,
 
     auto map = [bottom, top, negativeInfinity](float v)
         {
-            return juce::jmap(v, negativeInfinity, 0.f, bottom + 10.f, top);
+            return juce::jmap(v, negativeInfinity, 0.f, bottom, top);
         };
 
     float y = map(renderData[0]);

@@ -27,6 +27,8 @@ public:
     void process(juce::Rectangle<float> fftBounds, double sampleRate);
     juce::Path getPath() const;
 
+    void setNegativeInfinity(float newValue);
+
 private:
     SingleChannelSampleFifo<juce::AudioBuffer<float>>* leftChannelFifo;
 
@@ -35,6 +37,8 @@ private:
     AnalyzerPathGenerator pathProducer;
 
     juce::Path leftChannelFFTPath;
+
+    float negativeInfinity{ -48.f };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PathProducer)
 };

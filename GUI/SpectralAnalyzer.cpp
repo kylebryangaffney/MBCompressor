@@ -48,13 +48,17 @@ void SpectralAnalyzerComponent::paint(juce::Graphics& g)
     if (shouldShowFFTAnalysis)
     {
         auto leftChannelFFTPath = leftPathProducer.getPath();
-        leftChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), responseArea.getY()));
+        leftChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), 0
+            //responseArea.getY()
+            ));
 
         g.setColour(Colour(97u, 18u, 167u)); //purple-
         g.strokePath(leftChannelFFTPath, PathStrokeType(1.f));
 
         auto rightChannelFFTPath = rightPathProducer.getPath();
-        rightChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), responseArea.getY()));
+        rightChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), 0
+            //responseArea.getY()
+            ));
 
         g.setColour(Colour(215u, 201u, 134u));
         g.strokePath(rightChannelFFTPath, PathStrokeType(1.f));
@@ -223,7 +227,15 @@ void SpectralAnalyzerComponent::drawTextLabels(juce::Graphics& g)
 
 void SpectralAnalyzerComponent::resized()
 {
-    using namespace juce;
+    //using namespace juce;
+    auto fftBounds = getAnalysisArea().toFloat();
+    auto negInf = juce::jmap(getLocalBounds().toFloat().getBottom(),
+        fftBounds.getBottom(), fftBounds.getY(), -48.f, 0.f);
+
+    DBG("Negatvie Infinity: " << negInf);
+
+    leftPathProducer.setNegativeInfinity(negInf);
+    rightPathProducer.setNegativeInfinity(negInf);
 
 }
 
@@ -238,6 +250,7 @@ void SpectralAnalyzerComponent::timerCallback()
     if (shouldShowFFTAnalysis)
     {
         auto fftBounds = getAnalysisArea().toFloat();
+        fftBounds.setBottom(getLocalBounds().getBottom());
         auto sampleRate = audioProcessor.getSampleRate();
 
         leftPathProducer.process(fftBounds, sampleRate);
