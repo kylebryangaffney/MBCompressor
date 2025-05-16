@@ -35,5 +35,6 @@ private:
     AnalyzerPathGenerator pathProducer;
 
     juce::Path leftChannelFFTPath;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PathProducer)
 };

@@ -34,8 +34,7 @@ private:
     Placeholder controlBar;
     GlobalControls globalControls{ audioProcessor.apvts };
     CompressorBandControls bandControls{ audioProcessor.apvts };
-    SpectralAnalyzerComponent analyzer;
+    SpectralAnalyzerComponent analyzer{ audioProcessor };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MBCompAudioProcessorEditor)
 };
-

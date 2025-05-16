@@ -14,7 +14,7 @@ MBCompAudioProcessorEditor::MBCompAudioProcessorEditor(MBCompAudioProcessor& p)
 {
     setLookAndFeel(&lnf);
     //addAndMakeVisible(controlBar);
-    //addAndMakeVisible(analyzer);
+    addAndMakeVisible(analyzer);
     addAndMakeVisible(globalControls);
     addAndMakeVisible(bandControls);
 
