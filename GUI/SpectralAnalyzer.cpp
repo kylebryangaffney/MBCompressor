@@ -46,23 +46,9 @@ void SpectralAnalyzerComponent::paint(juce::Graphics& g)
 
     drawBackgroundGrid(g, bounds);
 
-    auto responseArea = getAnalysisArea(bounds);
-
     if (shouldShowFFTAnalysis)
     {
-        auto leftChannelFFTPath = leftPathProducer.getPath();
-        leftChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), 0
-        ));
-
-        g.setColour(Colour(97u, 18u, 167u)); //purple-
-        g.strokePath(leftChannelFFTPath, PathStrokeType(1.f));
-
-        auto rightChannelFFTPath = rightPathProducer.getPath();
-        rightChannelFFTPath.applyTransform(AffineTransform().translation(responseArea.getX(), 0
-        ));
-
-        g.setColour(Colour(215u, 201u, 134u));
-        g.strokePath(rightChannelFFTPath, PathStrokeType(1.f));
+        drawFFTAnalysis(g, bounds);
     }
 
     g.setColour(Colours::white);
@@ -278,4 +264,26 @@ juce::Rectangle<int> SpectralAnalyzerComponent::getAnalysisArea(juce::Rectangle<
     bounds.removeFromTop(4);
     bounds.removeFromBottom(4);
     return bounds;
+}
+
+void SpectralAnalyzerComponent::drawFFTAnalysis(juce::Graphics& g, juce::Rectangle<int> bounds)
+{
+    juce::Rectangle<int> responseArea = getAnalysisArea(bounds);
+
+    juce::Graphics::ScopedSaveState sss(g);
+    g.reduceClipRegion(responseArea);
+
+    auto leftChannelFFTPath = leftPathProducer.getPath();
+    leftChannelFFTPath.applyTransform(juce::AffineTransform().translation(responseArea.getX(), 0
+    ));
+
+    g.setColour(juce::Colour(97u, 18u, 167u)); //purple-
+    g.strokePath(leftChannelFFTPath, juce::PathStrokeType(1.f));
+
+    auto rightChannelFFTPath = rightPathProducer.getPath();
+    rightChannelFFTPath.applyTransform(juce::AffineTransform().translation(responseArea.getX(), 0
+    ));
+
+    g.setColour(juce::Colour(215u, 201u, 134u));
+    g.strokePath(rightChannelFFTPath, juce::PathStrokeType(1.f));
 }

@@ -54,5 +54,7 @@ private:
 
     PathProducer leftPathProducer, rightPathProducer;
 
+    void drawFFTAnalysis(juce::Graphics& g, juce::Rectangle<int> bounds);
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SpectralAnalyzerComponent)
 };
