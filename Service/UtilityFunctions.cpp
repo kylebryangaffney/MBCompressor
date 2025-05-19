@@ -68,7 +68,7 @@ juce::RangedAudioParameter& getRangedParam(
 
 //==============================================================================
 // Draw a module background with full fill, rounded inner rect, and outline
-void drawModuleBackground(juce::Graphics& g,
+juce::Rectangle<int> drawModuleBackground(juce::Graphics& g,
     juce::Rectangle<int> bounds)
 {
     g.setColour(juce::Colours::blueviolet);
@@ -80,4 +80,6 @@ void drawModuleBackground(juce::Graphics& g,
     g.fillRoundedRectangle(bounds.toFloat(), 3);
 
     g.drawRect(localBounds);
+
+    return bounds;
 }

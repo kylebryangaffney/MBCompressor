@@ -27,10 +27,13 @@ void PathProducer::process(juce::Rectangle<float> fftBounds, double sampleRate)
             int size = tempIncomingBuffer.getNumSamples();
             int monoSize = monoBuffer.getNumSamples();
 
-            juce::FloatVectorOperations::copy(
-                monoBuffer.getWritePointer(0, 0),
-                monoBuffer.getReadPointer(0, size),
-                monoSize - size);
+            auto writePointer = monoBuffer.getWritePointer(0, 0);
+            auto readPointer = monoBuffer.getReadPointer(0, size);
+
+            jassert(size <= monoBuffer.getNumSamples());
+            size = juce::jmin(size, monoBuffer.getNumSamples());
+
+            std::copy(readPointer, readPointer + (monoBuffer.getNumSamples() - size), writePointer);
 
             juce::FloatVectorOperations::copy(
                 monoBuffer.getWritePointer(0, monoSize - size),

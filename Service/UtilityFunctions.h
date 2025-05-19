@@ -59,6 +59,6 @@ juce::String getValString(
 
 //==============================================================================
 /// Draws a module background: full fill, rounded inner rect, and outline.
-void drawModuleBackground(
+juce::Rectangle<int> drawModuleBackground(
     juce::Graphics& g,
     juce::Rectangle<int> bounds);

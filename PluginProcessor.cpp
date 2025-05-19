@@ -279,7 +279,7 @@ void MBCompAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
 
     updateState();
 
-    if (true)
+    if (false)
     {
         buffer.clear();
         juce::dsp::AudioBlock<float> audioBlock(buffer);
