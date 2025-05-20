@@ -51,23 +51,8 @@ void SpectralAnalyzerComponent::paint(juce::Graphics& g)
         drawFFTAnalysis(g, bounds);
     }
 
-    g.setColour(Colours::white);
-
-    Path border;
-
-    border.setUsingNonZeroWinding(false);
-
-    border.addRoundedRectangle(getRenderArea(bounds), 4);
-    border.addRectangle(getLocalBounds());
-
-    g.setColour(Colours::black);
-
-    //g.fillPath(border);
-
     drawTextLabels(g, bounds);
 
-    g.setColour(Colours::orange);
-    g.drawRoundedRectangle(getRenderArea(bounds).toFloat(), 4.f, 1.f);
 }
 
 std::vector<float> SpectralAnalyzerComponent::getFrequencies()
@@ -173,7 +158,7 @@ void SpectralAnalyzerComponent::drawTextLabels(juce::Graphics& g, juce::Rectangl
 
         r.setSize(textWidth, fontHeight);
         r.setCentre(x, 0);
-        r.setY(1);
+        r.setY(bounds.getY());
 
         g.drawFittedText(str, r, juce::Justification::centred, 1);
     }
@@ -193,7 +178,7 @@ void SpectralAnalyzerComponent::drawTextLabels(juce::Graphics& g, juce::Rectangl
 
         Rectangle<int> r;
         r.setSize(textWidth, fontHeight);
-        r.setX(getWidth() - textWidth);
+        r.setX(bounds.getRight() - textWidth);
         r.setCentre(r.getCentreX(), y);
 
         g.setColour(gDb == 0.f ? Colour(0u, 172u, 1u) : Colours::lightgrey);
@@ -203,7 +188,7 @@ void SpectralAnalyzerComponent::drawTextLabels(juce::Graphics& g, juce::Rectangl
         str.clear();
         str << (gDb - 24.f);
 
-        r.setX(1);
+        r.setX(bounds.getX() + 3);
         textWidth = g.getCurrentFont().getStringWidth(str);
         r.setSize(textWidth, fontHeight);
         g.setColour(Colours::lightgrey);
