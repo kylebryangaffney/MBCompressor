@@ -10,6 +10,7 @@
 
 #include "SpectralAnalyzer.h"
 #include "../Service/UtilityFunctions.h"
+#include "../DSP/Constants.h"
 
 
 SpectralAnalyzerComponent::SpectralAnalyzerComponent(MBCompAudioProcessor& p) :
@@ -68,10 +69,16 @@ std::vector<float> SpectralAnalyzerComponent::getFrequencies()
 
 std::vector<float> SpectralAnalyzerComponent::getGains()
 {
-    return std::vector<float>
+    std::vector<float> values;
+
+    float increment = MAX_DECIBELS; // 12 db steps
+
+    for (float db = NEGATIVE_INFINITY; db <= MAX_DECIBELS; db += increment)
     {
-        -24, -12, 0, 12, 24
-    };
+        values.push_back(db);
+    }
+
+    return values;
 }
 
 std::vector<float> SpectralAnalyzerComponent::getXs(const std::vector<float>& freqs, float left, float width)
@@ -110,7 +117,7 @@ void SpectralAnalyzerComponent::drawBackgroundGrid(juce::Graphics& g, juce::Rect
 
     for (auto gDb : gain)
     {
-        auto y = jmap(gDb, -24.f, 24.f, float(bottom), float(top));
+        auto y = jmap(gDb, NEGATIVE_INFINITY, MAX_DECIBELS, float(bottom), float(top));
 
         g.setColour(gDb == 0.f ? Colour(0u, 172u, 1u) : Colours::darkgrey);
         g.drawHorizontalLine(y, left, right);
@@ -167,7 +174,7 @@ void SpectralAnalyzerComponent::drawTextLabels(juce::Graphics& g, juce::Rectangl
 
     for (auto gDb : gain)
     {
-        auto y = jmap(gDb, -24.f, 24.f, float(bottom), float(top));
+        auto y = jmap(gDb, NEGATIVE_INFINITY, MAX_DECIBELS, float(bottom), float(top));
 
         String str;
         if (gDb > 0)
@@ -185,9 +192,6 @@ void SpectralAnalyzerComponent::drawTextLabels(juce::Graphics& g, juce::Rectangl
 
         g.drawFittedText(str, r, juce::Justification::centredLeft, 1);
 
-        str.clear();
-        str << (gDb - 24.f);
-
         r.setX(bounds.getX() + 3);
         textWidth = g.getCurrentFont().getStringWidth(str);
         r.setSize(textWidth, fontHeight);
@@ -201,7 +205,7 @@ void SpectralAnalyzerComponent::resized()
     juce::Rectangle<int> bounds = getLocalBounds();
     juce::Rectangle<float> fftBounds = getAnalysisArea(bounds).toFloat();
     float negInf = juce::jmap(bounds.toFloat().getBottom(),
-        fftBounds.getBottom(), fftBounds.getY(), -48.f, 0.f);
+        fftBounds.getBottom(), fftBounds.getY(), NEGATIVE_INFINITY, MAX_DECIBELS);
 
     DBG("Negatvie Infinity: " << negInf);
 

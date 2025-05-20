@@ -14,7 +14,7 @@
 #include <JuceHeader.h>
 #include <juce_audio_basics/juce_audio_basics.h>
 #include <type_traits>
-#include "ChannelEnum.h"
+#include "Constants.h"
 
 
 template<typename T>

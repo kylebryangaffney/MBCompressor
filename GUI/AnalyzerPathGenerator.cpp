@@ -27,7 +27,7 @@ void AnalyzerPathGenerator::generatePath(const std::vector<float>& renderData,
 
     auto map = [bottom, top, negativeInfinity](float v)
         {
-            return juce::jmap(v, negativeInfinity, 0.f, bottom, top);
+            return juce::jmap(v, negativeInfinity, MAX_DECIBELS, bottom, top);
         };
 
     float y = map(renderData[0]);

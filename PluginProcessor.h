@@ -11,7 +11,7 @@
 #include <JuceHeader.h>
 #include "Service/Parameters.h"
 #include "DSP/CompressorBand.h"
-#include "DSP/ChannelEnum.h"               
+#include "DSP/Constants.h"               
 #include "DSP/FIFO.h"                      
 #include "DSP/SingleChannelSampleFIFO.h"
 

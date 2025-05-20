@@ -2,7 +2,7 @@
 #pragma once
 
 #include <JuceHeader.h>
-#include "DSP/ChannelEnum.h"
+#include "DSP/Constants.h"
 #include "PluginProcessor.h"
 #include "GUI/LookAndFeel.h"
 #include "GUI/PluginButtons.h"

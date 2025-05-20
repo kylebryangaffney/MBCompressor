@@ -11,7 +11,7 @@
 
 #pragma once
 #include <JuceHeader.h>
-#include "../DSP/ChannelEnum.h"
+#include "Constants.h"
 #include "FIFO.h"
 
 
