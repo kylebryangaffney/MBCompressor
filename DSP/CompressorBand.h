@@ -10,6 +10,7 @@
 
 #pragma once
 #include <JuceHeader.h>
+#include "Constants.h";
 
 
 struct CompressorBand
@@ -28,9 +29,16 @@ struct CompressorBand
     void updateCompressorSettings();
     void process(juce::AudioBuffer<float>& buffer);
 
+    float getRmsInputLevelDb() const { return rmsInputLevelDb; }
+    float getRmsOutputLevelDb() const { return rmsOutputLevelDb; }
+
 private:
     juce::dsp::Compressor<float> compressor;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CompressorBand)
+    std::atomic<float> rmsInputLevelDb{ NEGATIVE_INFINITY };
+    std::atomic<float> rmsOutputLevelDb{ NEGATIVE_INFINITY };
 
+    float computeRMSLevel(const juce::AudioBuffer<float>& buffer);
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CompressorBand)
 };

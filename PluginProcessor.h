@@ -63,15 +63,15 @@ public:
     SingleChannelSampleFifo<juce::AudioBuffer<float>> leftChannelFifo{ Channel::Left };
     SingleChannelSampleFifo<juce::AudioBuffer<float>> rightChannelFifo{ Channel::Right };
 
-
-private:
-    //==============================================================================
-
     std::array<CompressorBand, 3> compressorArray;
 
     CompressorBand& lowBandComp = compressorArray[0];
     CompressorBand& midBandComp = compressorArray[1];
     CompressorBand& highBandComp = compressorArray[2];
+
+
+private:
+    //==============================================================================
 
     juce::dsp::LinkwitzRileyFilter<float>
         LPFilter1, APFilter2,
