@@ -23,6 +23,19 @@ SpectralAnalyzerComponent::SpectralAnalyzerComponent(MBCompAudioProcessor& p) :
     {
         param->addListener(this);
     }
+    const auto& paramNames = Parameters::GetParams();
+
+    auto floatHelper = [&apvts = audioProcessor.apvts, &paramNames](auto& param, const auto& paramName)
+        {
+            param = dynamic_cast<juce::AudioParameterFloat*>(apvts.getParameter(paramNames.at(paramName)));
+            jassert(param != nullptr);
+        };
+
+    floatHelper(lowMidCrossoverParam, Parameters::Low_Mid_Crossover_Freq);
+    floatHelper(midHighCrossoverParam, Parameters::Mid_High_Crossover_Freq);
+    floatHelper(lowThresholdParam, Parameters::Threshold_Low_Band);
+    floatHelper(midThresholdParam, Parameters::Threshold_Mid_Band);
+    floatHelper(highThresholdParam, Parameters::Threshold_High_Band);
 
     startTimerHz(60);
 }
@@ -52,6 +65,7 @@ void SpectralAnalyzerComponent::paint(juce::Graphics& g)
         drawFFTAnalysis(g, bounds);
     }
 
+    drawCrossovers(g, bounds);
     drawTextLabels(g, bounds);
 
 }
@@ -86,7 +100,7 @@ std::vector<float> SpectralAnalyzerComponent::getXs(const std::vector<float>& fr
     std::vector<float> xs;
     for (auto f : freqs)
     {
-        auto normX = juce::mapFromLog10(f, 20.f, 20000.f);
+        auto normX = juce::mapFromLog10(f, MIN_FREQUENCY, MAX_FREQUENCY);
         xs.push_back(left + width * normX);
     }
 
@@ -275,4 +289,37 @@ void SpectralAnalyzerComponent::drawFFTAnalysis(juce::Graphics& g, juce::Rectang
 
     g.setColour(juce::Colour(215u, 201u, 134u));
     g.strokePath(rightChannelFFTPath, juce::PathStrokeType(1.f));
+}
+
+void SpectralAnalyzerComponent::drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bounds)
+{
+    bounds = getAnalysisArea(bounds);
+
+    const int top = bounds.getY();
+    const int bottom = bounds.getBottom();
+    const int left = bounds.getX();
+    const int right = bounds.getRight();
+
+    std::function<float(float)> mapX = [left = bounds.getX(), width = bounds.getWidth()]
+                (float frequency)
+        {
+            float normX = juce::mapFromLog10(frequency, MIN_FREQUENCY, MAX_FREQUENCY);
+            return left + width * normX;
+        };
+
+    std::function<float(float)> mapY = [bottom, top](float db)
+        {
+            return juce::jmap(db, NEGATIVE_INFINITY, MAX_DECIBELS, (float)bottom, (float)top);
+        };
+
+    g.setColour(juce::Colours::blue);
+    float lowMidX = mapX(lowMidCrossoverParam->get());
+    g.drawVerticalLine(lowMidX, top, bottom);
+    float midHighX = mapX(midHighCrossoverParam->get());
+    g.drawVerticalLine(midHighX, top, bottom);
+
+    g.setColour(juce::Colours::yellow);
+    g.drawHorizontalLine(mapY(lowThresholdParam->get()), left, lowMidX);
+    g.drawHorizontalLine(mapY(midThresholdParam->get()), lowMidX, midHighX);
+    g.drawHorizontalLine(mapY(highThresholdParam->get()), midHighX, right);
 }

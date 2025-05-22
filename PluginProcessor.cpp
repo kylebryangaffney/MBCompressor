@@ -35,7 +35,7 @@ MBCompAudioProcessor::MBCompAudioProcessor()
             param = dynamic_cast<juce::AudioParameterChoice*>(apvts.getParameter(params.at(paramName)));
             jassert(param != nullptr);
         };
-    
+
     auto boolHelper = [&apvts = this->apvts, &params](auto& param, const auto& paramName)
         {
             param = dynamic_cast<juce::AudioParameterBool*>(apvts.getParameter(params.at(paramName)));
@@ -130,7 +130,7 @@ double MBCompAudioProcessor::getTailLengthSeconds() const
 
 int MBCompAudioProcessor::getNumPrograms()
 {
-    return 1;   
+    return 1;
 }
 
 int MBCompAudioProcessor::getCurrentProgram()
@@ -178,7 +178,7 @@ void MBCompAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
     {
         buffer.setSize(spec.numChannels, samplesPerBlock);
     }
-    
+
     leftChannelFifo.prepare(samplesPerBlock);
     rightChannelFifo.prepare(samplesPerBlock);
 
@@ -239,7 +239,7 @@ void MBCompAudioProcessor::updateState()
 
     inputGain.setGainDecibels(inputGainParam->get());
     outputGain.setGainDecibels(outputGainParam->get());
-    }
+}
 
 void MBCompAudioProcessor::splitBands(const juce::AudioBuffer<float>& inputBuffer)
 {
@@ -389,7 +389,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout MBCompAudioProcessor::create
     auto thresholdRange = juce::NormalisableRange<float>{ MIN_THRESHOLD, MAX_DECIBELS, 0.1f, 1 };
 
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        params.at(Parameters::Names::Threshold_Low_Band), 
+        params.at(Parameters::Names::Threshold_Low_Band),
         params.at(Parameters::Names::Threshold_Low_Band),
         thresholdRange, 0));
 
@@ -409,7 +409,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout MBCompAudioProcessor::create
     releaseRange.setSkewForCentre(55.f);
 
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        params.at(Parameters::Names::Attack_Low_Band), 
+        params.at(Parameters::Names::Attack_Low_Band),
         params.at(Parameters::Names::Attack_Low_Band),
         attackRange, 50
     ));
@@ -505,12 +505,12 @@ juce::AudioProcessorValueTreeState::ParameterLayout MBCompAudioProcessor::create
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         params.at(Parameters::Names::Low_Mid_Crossover_Freq),
         params.at(Parameters::Names::Low_Mid_Crossover_Freq),
-        juce::NormalisableRange<float>(20, 999, 1, 1), 450));
+        juce::NormalisableRange<float>(MIN_FREQUENCY, 999, 1, 1), 450));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         params.at(Parameters::Names::Mid_High_Crossover_Freq),
         params.at(Parameters::Names::Mid_High_Crossover_Freq),
-        juce::NormalisableRange<float>(1000, 20000, 1, 1), 2000));
+        juce::NormalisableRange<float>(1000, MAX_FREQUENCY, 1, 1), 2000));
 
     return layout;
 

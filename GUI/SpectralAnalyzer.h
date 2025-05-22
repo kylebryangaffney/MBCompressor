@@ -56,5 +56,15 @@ private:
 
     void drawFFTAnalysis(juce::Graphics& g, juce::Rectangle<int> bounds);
 
+    void drawCrossovers(juce::Graphics& g, juce::Rectangle<int> bounds);
+
+    juce::AudioParameterFloat* lowMidCrossoverParam{ nullptr };
+    juce::AudioParameterFloat* midHighCrossoverParam{ nullptr };
+
+    juce::AudioParameterFloat* lowThresholdParam{ nullptr };
+    juce::AudioParameterFloat* midThresholdParam{ nullptr };
+    juce::AudioParameterFloat* highThresholdParam{ nullptr };
+
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SpectralAnalyzerComponent)
 };

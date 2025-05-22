@@ -45,7 +45,7 @@ void AnalyzerPathGenerator::generatePath(const std::vector<float>& renderData,
         if (!std::isnan(y) && !std::isinf(y))
         {
             float binFreq = static_cast<float>(binNum) * binWidth;
-            float normalizedX = juce::mapFromLog10(binFreq, 20.f, 20000.f);
+            float normalizedX = juce::mapFromLog10(binFreq, MIN_FREQUENCY, MAX_FREQUENCY);
             int binX = static_cast<int>(std::floor(normalizedX * width));
 
             p.lineTo(binX, y);
