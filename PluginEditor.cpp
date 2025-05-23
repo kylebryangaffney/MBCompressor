@@ -56,5 +56,6 @@ void MBCompAudioProcessorEditor::timerCallback()
         audioProcessor.highBandComp.getRmsInputLevelDb(),
         audioProcessor.highBandComp.getRmsOutputLevelDb()
     };
+    analyzer.update(rmsValues);
 
 }

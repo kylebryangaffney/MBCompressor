@@ -34,6 +34,8 @@ struct SpectralAnalyzerComponent : juce::Component,
     {
         shouldShowFFTAnalysis = enabled;
     }
+
+    void update(const std::vector<float>& rmsValues);
 private:
     MBCompAudioProcessor& audioProcessor;
 
@@ -64,6 +66,10 @@ private:
     juce::AudioParameterFloat* lowThresholdParam{ nullptr };
     juce::AudioParameterFloat* midThresholdParam{ nullptr };
     juce::AudioParameterFloat* highThresholdParam{ nullptr };
+
+    float lowBandGR{ 0.0f };
+    float midBandGR{ 0.0f };
+    float highBandGR{ 0.0f };
 
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SpectralAnalyzerComponent)

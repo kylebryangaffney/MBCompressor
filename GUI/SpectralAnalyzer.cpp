@@ -301,7 +301,7 @@ void SpectralAnalyzerComponent::drawCrossovers(juce::Graphics& g, juce::Rectangl
     const int right = bounds.getRight();
 
     std::function<float(float)> mapX = [left = bounds.getX(), width = bounds.getWidth()]
-                (float frequency)
+    (float frequency)
         {
             float normX = juce::mapFromLog10(frequency, MIN_FREQUENCY, MAX_FREQUENCY);
             return left + width * normX;
@@ -318,8 +318,37 @@ void SpectralAnalyzerComponent::drawCrossovers(juce::Graphics& g, juce::Rectangl
     float midHighX = mapX(midHighCrossoverParam->get());
     g.drawVerticalLine(midHighX, top, bottom);
 
+    float zeroDB = mapY(0.0f);
+    g.setColour(juce::Colours::red.withAlpha(0.3f));
+
+    g.fillRect(juce::Rectangle<float>::leftTopRightBottom(left, zeroDB, lowMidX, mapY(lowBandGR)));
+    g.fillRect(juce::Rectangle<float>::leftTopRightBottom(lowMidX, zeroDB, midHighX, mapY(midBandGR)));
+    g.fillRect(juce::Rectangle<float>::leftTopRightBottom(midHighX, zeroDB, right, mapY(highBandGR)));
+
+
     g.setColour(juce::Colours::yellow);
     g.drawHorizontalLine(mapY(lowThresholdParam->get()), left, lowMidX);
     g.drawHorizontalLine(mapY(midThresholdParam->get()), lowMidX, midHighX);
     g.drawHorizontalLine(mapY(highThresholdParam->get()), midHighX, right);
+}
+
+void SpectralAnalyzerComponent::update(const std::vector<float>& rmsValues)
+{
+    jassert(rmsValues.size() == 6);
+
+    enum
+    {
+        lowBandIn,
+        lowBandOut,
+        midBandIn,
+        midBandOut,
+        highBandIn,
+        highBandOut
+    };
+
+    lowBandGR = rmsValues[lowBandOut] - rmsValues[lowBandIn];
+    midBandGR = rmsValues[midBandOut] - rmsValues[midBandIn];
+    highBandGR = rmsValues[highBandOut] - rmsValues[highBandIn];
+
+    repaint();
 }
