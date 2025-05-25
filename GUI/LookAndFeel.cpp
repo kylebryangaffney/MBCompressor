@@ -26,10 +26,12 @@ void LookAndFeel::drawRotarySlider(juce::Graphics& g,
 
     auto enabled = slider.isEnabled();
 
-    g.setColour(enabled ? Colour(97u, 18u, 167u) : Colours::darkgrey);
+    //g.setColour(enabled ? Colour(97u, 18u, 167u) : Colours::darkgrey);
+    g.setColour(enabled ? ColorScheme::getModuleBorderColor() : Colours::darkgrey);
     g.fillEllipse(bounds);
 
-    g.setColour(enabled ? Colour(255u, 154u, 1u) : Colours::grey);
+    //g.setColour(enabled ? Colour(255u, 154u, 1u) : Colours::grey);
+    g.setColour(enabled ? ColorScheme::getSliderBorderColor() : Colours::grey);
     g.drawEllipse(bounds, 1.f);
 
     if (auto* rswl = dynamic_cast<RotarySliderWithLabels*>(&slider))
@@ -126,10 +128,10 @@ void LookAndFeel::drawToggleButton(juce::Graphics& g,
 
         const int cornerSize = 4;
 
-        g.setColour(buttonIsOn ? 
+        g.setColour(buttonIsOn ?
             toggleButton.findColour(TextButton::ColourIds::buttonOnColourId) :
             toggleButton.findColour(TextButton::ColourIds::buttonColourId));
-        
+
         g.fillRoundedRectangle(bounds.toFloat(), cornerSize);
 
         g.setColour(buttonIsOn ? juce::Colours::black : juce::Colours::white);

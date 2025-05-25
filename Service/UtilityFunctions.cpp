@@ -71,7 +71,7 @@ juce::RangedAudioParameter& getRangedParam(
 juce::Rectangle<int> drawModuleBackground(juce::Graphics& g,
     juce::Rectangle<int> bounds)
 {
-    g.setColour(juce::Colours::blueviolet);
+    g.setColour(ColorScheme::getModuleBorderColor());
     g.fillAll();
 
     auto localBounds = bounds;

@@ -5,6 +5,7 @@
 #include <memory>
 #include "../PluginProcessor.h"
 #include "../GUI/RotarySliderWithLabels.h"
+#include "../GUI//LookAndFeel.h"
 #include "Parameters.h"
 
 //==============================================================================
