@@ -22,6 +22,7 @@ struct CompressorBandControls : juce::Component, juce::Button::Listener
     void paint(juce::Graphics& g) override;
 
     void buttonClicked(juce::Button* button) override;
+    void toggleAllBands(bool isBypassed);
 
 private:
     juce::AudioProcessorValueTreeState& apvts;
@@ -49,7 +50,7 @@ private:
     void updateBandSelectButtonStates();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(CompressorBandControls)
-    
+
 };
 
 static juce::AudioParameterBool* getBoolParam(

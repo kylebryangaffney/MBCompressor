@@ -69,7 +69,7 @@ CompressorBandControls::CompressorBandControls(juce::AudioProcessorValueTreeStat
     highBandButton.onClick = buttonSwitcher;
 
     lowBandButton.setToggleState(true, juce::NotificationType::dontSendNotification);
-    
+
     updateAttachments();
     updateSliderEnablements();
     updateBandSelectButtonStates();
@@ -173,6 +173,22 @@ void CompressorBandControls::updateBandSelectButtonStates()
     }
 }
 
+void CompressorBandControls::toggleAllBands(bool isBypassed)
+{
+    std::vector<juce::Component*> bandButtonss{ &lowBandButton, &midBandButton, &highBandButton };
+
+    for (auto* band : bandButtonss)
+    {
+        band->setColour(juce::TextButton::ColourIds::buttonOnColourId, isBypassed ?
+            bypassButton.findColour(juce::TextButton::ColourIds::buttonOnColourId) : juce::Colours::grey);
+
+        band->setColour(juce::TextButton::ColourIds::buttonColourId, isBypassed ?
+            bypassButton.findColour(juce::TextButton::ColourIds::buttonOnColourId) : juce::Colours::black);
+
+        band->repaint();
+    }
+
+}
 
 void CompressorBandControls::buttonClicked(juce::Button* button)
 {

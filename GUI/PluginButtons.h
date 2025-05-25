@@ -17,6 +17,7 @@ struct PowerButton : juce::ToggleButton {};
 
 struct AnalyzerButton : juce::ToggleButton
 {
+    AnalyzerButton() = default;
     void resized() override;
     juce::Path randomPath;
 private:

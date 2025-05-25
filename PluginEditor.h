@@ -12,6 +12,7 @@
 #include "GUI/CompressorBandControls.h"
 #include "GUI/GlobalControls.h"
 #include "GUI/SpectralAnalyzer.h"
+#include "GUI/ControlBar.h"
 
 
 /**
@@ -33,10 +34,17 @@ private:
 
     MBCompAudioProcessor& audioProcessor;
 
-    Placeholder controlBar;
+    //Placeholder controlBar;
+    ControlBar controlBar;
     GlobalControls globalControls{ audioProcessor.apvts };
     CompressorBandControls bandControls{ audioProcessor.apvts };
     SpectralAnalyzerComponent analyzer{ audioProcessor };
+
+    void toggleGlobalBypassState();
+
+    std::array<juce::AudioParameterBool*, 3> getBypassParameters();
+
+    void updateGlobalBypassButton();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MBCompAudioProcessorEditor)
 };
